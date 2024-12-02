@@ -28,7 +28,6 @@ func Day2() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		// fmt.Println(line)
 
 		split := strings.Split(line, " ")
 		safe := lineSafe(split)
