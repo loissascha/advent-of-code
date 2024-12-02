@@ -32,7 +32,7 @@ func Day2() {
 		// fmt.Println(line)
 
 		split := strings.Split(line, " ")
-		safe := scanLine(split)
+		safe := lineSafe(split)
 		if safe {
 			safeReports++
 			continue
@@ -44,7 +44,7 @@ func Day2() {
 			var newSplit = make([]string, len(split))
 			copy(newSplit, split)
 			newSplit = removeIndex(newSplit, i)
-			safe := scanLine(newSplit)
+			safe := lineSafe(newSplit)
 			if safe {
 				hasSafe = true
 				break
@@ -64,7 +64,15 @@ func removeIndex(s []string, index int) []string {
 	return append(s[:index], s[index+1:]...)
 }
 
-func scanLine(line []string) bool {
+func getDiff(num1 int, num2 int) int {
+	diff := num1 - num2
+	if diff < 0 {
+		diff *= -1
+	}
+	return diff
+}
+
+func lineSafe(line []string) bool {
 	fmt.Println(line)
 
 	lineType := Unclear
@@ -75,6 +83,7 @@ func scanLine(line []string) bool {
 		num, err := strconv.Atoi(v)
 		assert.Nil(err, "Strconv Atoi failed for "+v)
 
+		// first run, just set lastNum and disable first run
 		if firstRun {
 			lastNum = num
 			firstRun = false
@@ -87,10 +96,7 @@ func scanLine(line []string) bool {
 			return false
 		}
 
-		diff := lastNum - num
-		if diff < 0 {
-			diff *= -1
-		}
+		diff := getDiff(lastNum, num)
 
 		// diff > 3 = fail
 		if diff > 3 {
@@ -98,24 +104,27 @@ func scanLine(line []string) bool {
 			return false
 		}
 
-		if lineType == Unclear { // first time -> define which lineType
+		switch lineType {
+		case Unclear: // first time -> define which lineType
 			if lastNum < num {
 				lineType = Increase
 			} else {
 				lineType = Decrease
 			}
-		} else if lineType == Increase { // if number doesn't increase -> failed
+			break
+		case Increase: // if number doesn't increase -> failed
 			if lastNum > num {
 				fmt.Println("unsafe because lineType increase and no increase. last num:", lastNum, "num:", num)
 				return false
 			}
-		} else if lineType == Decrease { // if number doesn't decrease -> failed
+			break
+		case Decrease: // if number doesn't decrease -> failed
 			if lastNum < num {
 				fmt.Println("unsafe because lineType decrease and no decrease. last num:", lastNum, "num:", num)
 				return false
 			}
+			break
 		}
-
 		lastNum = num
 	}
 
