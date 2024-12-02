@@ -1,13 +1,38 @@
-package main
+package day1
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
 	"github.com/loissascha/go-assert/assert"
 )
+
+var firstSplit = []int{}
+var secondSplit = []int{}
+
+var diff = 0
+var simScore = 0
+
+func Day1() {
+	readFile("input1.txt")
+	fmt.Println(len(firstSplit), len(secondSplit))
+	l := len(firstSplit)
+	ogFirstSplit := make([]int, len(firstSplit))
+	ogSecondSplit := make([]int, len(secondSplit))
+	copy(ogFirstSplit, firstSplit)
+	copy(ogSecondSplit, secondSplit)
+
+	for i := 0; i < l; i++ {
+		compareLowest()
+	}
+	fmt.Println("diff is", diff)
+
+	similarityScore(ogFirstSplit, ogSecondSplit)
+	fmt.Println("sim score", simScore)
+}
 
 func similarityScore(split []int, controlSplit []int) {
 	for _, v := range split {
