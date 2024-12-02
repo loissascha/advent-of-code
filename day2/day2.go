@@ -19,7 +19,7 @@ const (
 )
 
 func Day2() {
-	file, err := os.Open("input2.txt")
+	file, err := os.Open("testinput2.txt")
 	assert.Nil(err, "Can't read file!")
 	defer file.Close()
 
@@ -45,6 +45,8 @@ func scanLine(line []string) {
 	firstRun := true
 	lastNum := 0
 
+	levelDampener := false
+
 	for _, v := range line {
 		num, err := strconv.Atoi(v)
 		assert.Nil(err, "Strconv Atoi failed for "+v)
@@ -57,9 +59,14 @@ func scanLine(line []string) {
 
 		// no diff = fail
 		if lastNum == num {
-			unsafeReports++
-			fmt.Println("unsafe because lastNum == num")
-			return
+			if !levelDampener {
+				levelDampener = true
+				continue
+			} else {
+				unsafeReports++
+				fmt.Println("unsafe because lastNum == num")
+				return
+			}
 		}
 
 		diff := lastNum - num
@@ -69,9 +76,14 @@ func scanLine(line []string) {
 
 		// diff > 3 = fail
 		if diff > 3 {
-			unsafeReports++
-			fmt.Println("unsafe because diff > 3")
-			return
+			if !levelDampener {
+				levelDampener = true
+				continue
+			} else {
+				unsafeReports++
+				fmt.Println("unsafe because diff > 3")
+				return
+			}
 		}
 
 		if lineType == Unclear {
@@ -82,15 +94,25 @@ func scanLine(line []string) {
 			}
 		} else if lineType == Increase {
 			if lastNum > num {
-				unsafeReports++
-				fmt.Println("unsafe because lineType increase and no increase. last num:", lastNum, "num:", num)
-				return
+				if !levelDampener {
+					levelDampener = true
+					continue
+				} else {
+					unsafeReports++
+					fmt.Println("unsafe because lineType increase and no increase. last num:", lastNum, "num:", num)
+					return
+				}
 			}
 		} else if lineType == Decrease {
 			if lastNum < num {
-				unsafeReports++
-				fmt.Println("unsafe because lineType decrease and no decrease. last num:", lastNum, "num:", num)
-				return
+				if !levelDampener {
+					levelDampener = true
+					continue
+				} else {
+					unsafeReports++
+					fmt.Println("unsafe because lineType decrease and no decrease. last num:", lastNum, "num:", num)
+					return
+				}
 			}
 		}
 
