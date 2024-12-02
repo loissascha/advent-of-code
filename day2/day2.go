@@ -19,7 +19,6 @@ const (
 )
 
 var safeReports = 0
-var unsafeReports = 0
 
 func Day2() {
 	file, err := os.Open("input2.txt")
@@ -38,26 +37,31 @@ func Day2() {
 			continue
 		}
 
-		// check if it's safe if one number is removed from the list
-		hasSafe := false
-		for i := 0; i < len(split); i++ {
-			var newSplit = make([]string, len(split))
-			copy(newSplit, split)
-			newSplit = removeIndex(newSplit, i)
-			safe := lineSafe(newSplit)
-			if safe {
-				hasSafe = true
-				break
-			}
-		}
+		// Problem Dampener
+		hasSafe := hasSafeVariation(split)
 		if hasSafe {
 			safeReports++
 			continue
 		}
-		unsafeReports++
 	}
 
 	fmt.Println("Safe reports:", safeReports)
+}
+
+// check if it has a variant where one element is removed that is safe
+func hasSafeVariation(split []string) bool {
+	hasSafe := false
+	for i := 0; i < len(split); i++ {
+		var newSplit = make([]string, len(split))
+		copy(newSplit, split)
+		newSplit = removeIndex(newSplit, i)
+		safe := lineSafe(newSplit)
+		if safe {
+			hasSafe = true
+			break
+		}
+	}
+	return hasSafe
 }
 
 func removeIndex(s []string, index int) []string {
