@@ -21,7 +21,7 @@ const (
 var safeReports = 0
 
 func Day2() {
-	file, err := os.Open("input2.txt")
+	file, err := os.Open("day2.input")
 	assert.Nil(err, "Can't read file!")
 	defer file.Close()
 

@@ -17,7 +17,7 @@ var diff = 0
 var simScore = 0
 
 func Day1() {
-	readFile("input1.txt")
+	readFile("day1.input")
 	fmt.Println(len(firstSplit), len(secondSplit))
 	l := len(firstSplit)
 	ogFirstSplit := make([]int, len(firstSplit))
