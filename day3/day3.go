@@ -41,6 +41,7 @@ func getMulsFromInput(input string) []MulResult {
 	readingFirstNum := true
 	firstNum := ""
 	secondNum := ""
+	doEnabled := true
 	for i := 0; i < len(input); i++ {
 		char := input[i : i+1]
 		// fmt.Println(char)
@@ -50,6 +51,57 @@ func getMulsFromInput(input string) []MulResult {
 		case "":
 			if char == "m" {
 				currentRead += char
+			} else if char == "d" {
+				currentRead += char
+			}
+			break
+		case "d":
+			if char == "o" {
+				currentRead += char
+			} else {
+				currentRead = ""
+			}
+			break
+		case "do":
+			if char == "(" { // do
+				currentRead += char
+			} else if char == "n" { // don't
+				currentRead += char
+			} else {
+				currentRead = ""
+			}
+			break
+		case "do(":
+			currentRead = ""
+			if char == ")" {
+				doEnabled = true
+			}
+			break
+		case "don":
+			if char == "'" {
+				currentRead += char
+			} else {
+				currentRead = ""
+			}
+			break
+		case "don'":
+			if char == "t" {
+				currentRead += char
+			} else {
+				currentRead = ""
+			}
+			break
+		case "don't":
+			if char == "(" {
+				currentRead += char
+			} else {
+				currentRead = ""
+			}
+			break
+		case "don't(":
+			currentRead = ""
+			if char == ")" {
+				doEnabled = false
 			}
 			break
 		case "m":
@@ -127,7 +179,9 @@ func getMulsFromInput(input string) []MulResult {
 					res: mul,
 				}
 				// add to result and reset
-				res = append(res, mulRes)
+				if doEnabled {
+					res = append(res, mulRes)
+				}
 				currentRead = ""
 				readingFirstNum = true
 				firstNum = ""
