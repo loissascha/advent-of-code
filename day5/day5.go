@@ -43,24 +43,64 @@ func Day5() {
 
 func (u *Update) testUpdate() {
 	fmt.Println("testing update with:", u.elements)
-	for _, element := range u.elements {
-		fmt.Println("finding rules for number", element)
+	ruleFailed := false
+	for i, element := range u.elements {
+		// fmt.Println("finding rules for number", element)
 		rs := findRulesForNumber(element)
-		fmt.Println(rs)
+		// fmt.Println(rs)
 		// go through each rule and test if it fullfills it?
 		for _, r := range rs {
-			ff := u.ruleFulfilled(r)
+			// test if elements from rule are even included
+			elementsInRule := 0
+			for _, v := range u.elements {
+				if r.left == v || r.right == v {
+					elementsInRule++
+				}
+			}
+			if elementsInRule < 2 {
+				// fmt.Println("skipped rule because not all elements in rule!")
+				continue
+			}
+			ff := u.ruleFulfilled(i, r)
 			if ff {
-				fmt.Println("rule fulfilled")
+				// fmt.Println("rule fulfilled")
+				// fmt.Println(r)
 			} else {
-				fmt.Println("rule not fulfilled")
+				// fmt.Println("rule not fulfilled")
+				// fmt.Println(r)
+				ruleFailed = true
 			}
 		}
 	}
+	if !ruleFailed {
+		fmt.Println("rule success!")
+	}
 }
 
-func (u *Update) ruleFulfilled(rule Rule) bool {
-
+func (u *Update) ruleFulfilled(index int, rule Rule) bool {
+	num := u.elements[index]
+	// number on left side of rule -> look at all the elements after
+	if rule.left == num {
+		for i, v := range u.elements {
+			if i <= index {
+				continue
+			}
+			if v == rule.right {
+				return true
+			}
+		}
+	}
+	// number on right side of rule -> look at all the elements before
+	if rule.right == num {
+		for i, v := range u.elements {
+			if i >= index {
+				continue
+			}
+			if v == rule.left {
+				return true
+			}
+		}
+	}
 	return false
 }
 
