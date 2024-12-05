@@ -21,11 +21,10 @@ type Update struct {
 
 var rules = []Rule{}
 var updates = []Update{}
+var overallSum = 0
 
 func Day5() {
-	// read rules
-	// read updates
-	readFile("day5.test")
+	readFile("day5.input")
 
 	fmt.Println("found", len(rules), "rules")
 	fmt.Println("found", len(updates), "updates")
@@ -34,21 +33,14 @@ func Day5() {
 		u.testUpdate()
 	}
 
-	// go number by number
-	// find rules that matter for this number
-	// check if rules are fullfilled for this number (by checking all the elements before and next of it)
-
-	// if correctly ordered -> get middle number and add together
+	fmt.Println("Overall Sum:", overallSum)
 }
 
 func (u *Update) testUpdate() {
 	fmt.Println("testing update with:", u.elements)
 	ruleFailed := false
 	for i, element := range u.elements {
-		// fmt.Println("finding rules for number", element)
 		rs := findRulesForNumber(element)
-		// fmt.Println(rs)
-		// go through each rule and test if it fullfills it?
 		for _, r := range rs {
 			// test if elements from rule are even included
 			elementsInRule := 0
@@ -58,23 +50,23 @@ func (u *Update) testUpdate() {
 				}
 			}
 			if elementsInRule < 2 {
-				// fmt.Println("skipped rule because not all elements in rule!")
 				continue
 			}
 			ff := u.ruleFulfilled(i, r)
-			if ff {
-				// fmt.Println("rule fulfilled")
-				// fmt.Println(r)
-			} else {
-				// fmt.Println("rule not fulfilled")
-				// fmt.Println(r)
+			if !ff {
 				ruleFailed = true
 			}
 		}
 	}
 	if !ruleFailed {
-		fmt.Println("rule success!")
+		middle := getMiddleElement(u.elements)
+		overallSum += middle
 	}
+}
+
+func getMiddleElement[T any](a []T) T {
+	i := len(a) / 2
+	return a[i]
 }
 
 func (u *Update) ruleFulfilled(index int, rule Rule) bool {
