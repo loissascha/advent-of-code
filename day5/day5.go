@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -30,16 +31,87 @@ func Day5() {
 	fmt.Println("found", len(updates), "updates")
 
 	for _, u := range updates {
-		ok, failedRules := u.testUpdate()
+		ok, _ := u.testUpdate()
 		// reorder based on rules!
 		if !ok {
-			fmt.Println("failed by rules:")
-			fmt.Println(failedRules)
+			u.correctlyOrder()
 		}
 
 	}
 
 	fmt.Println("Overall Sum:", overallSum)
+}
+
+func (u *Update) correctlyOrder() {
+	fmt.Println("trying to reorder update with elements:", u.elements)
+
+	// get all relevant rules
+	rrules := []Rule{}
+	for _, v := range u.elements {
+		rs := findRulesForNumber(v)
+		for _, r := range rs {
+			if u.ruleValidForUpdate(r) {
+				if !slices.Contains(rrules, r) {
+					rrules = append(rrules, r)
+				}
+			}
+		}
+	}
+
+	fmt.Println("this are all relevant rules for this update:", rrules)
+
+	// test
+	for _, v := range u.elements {
+		exists := false
+		for _, r := range rrules {
+			if r.left == v || r.right == v {
+				exists = true
+			}
+		}
+		assert.True(exists, fmt.Sprintf("No rule exists for element: %v", v))
+	}
+
+	// go through each rule and create a new slice based on the order rule by rule
+	newElements := []int{}
+	for _, r := range rrules {
+		newElements = addRuleToSlice(newElements, r)
+	}
+	fmt.Println("finished reorder, this is result:", newElements)
+}
+
+func addRuleToSlice(s []int, r Rule) []int {
+	fmt.Println("adding rule to slice", s, "rule:", r)
+	// check if rule is already fulfilled!
+
+	// just add it
+	newElements := []int{}
+	rSet := false
+	for i, v := range s {
+		if !rSet {
+			if v == r.left {
+				newElements = append(newElements, v)
+				newElements = append(newElements, r.right)
+				rSet = true
+				continue
+			}
+			if len(s) <= i+1 {
+				continue
+			}
+			next := s[i+1]
+			if next == r.right {
+				newElements = append(newElements, r.left)
+				rSet = true
+				continue
+			}
+		}
+		newElements = append(newElements, v)
+	}
+	if !rSet {
+		newElements = append(newElements, r.left)
+		newElements = append(newElements, r.right)
+	}
+	fmt.Println("res:", newElements)
+	return newElements
 }
 
 func (u *Update) testUpdate() (bool, []Rule) {
@@ -55,13 +127,16 @@ func (u *Update) testUpdate() (bool, []Rule) {
 			ff := u.ruleFulfilled(i, r)
 			if !ff {
 				ruleFailed = true
-				failedRules = append(failedRules, r)
+				if !slices.Contains(failedRules, r) {
+					failedRules = append(failedRules, r)
+				}
 			}
 		}
 	}
 	if !ruleFailed {
 		middle := getMiddleElement(u.elements)
 		overallSum += middle
+		fmt.Println("overallSum ++", middle)
 		return true, []Rule{}
 	}
 	return false, failedRules
