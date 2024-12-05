@@ -24,23 +24,28 @@ var updates = []Update{}
 var overallSum = 0
 
 func Day5() {
-	readFile("day5.input")
+	readFile("day5.test")
 
 	fmt.Println("found", len(rules), "rules")
 	fmt.Println("found", len(updates), "updates")
 
 	for _, u := range updates {
-		if !u.testUpdate() {
-			// test if alternative orders work
+		ok, failedRules := u.testUpdate()
+		// reorder based on rules!
+		if !ok {
+			fmt.Println("failed by rules:")
+			fmt.Println(failedRules)
 		}
+
 	}
 
 	fmt.Println("Overall Sum:", overallSum)
 }
 
-func (u *Update) testUpdate() bool {
+func (u *Update) testUpdate() (bool, []Rule) {
 	fmt.Println("testing update with:", u.elements)
 	ruleFailed := false
+	failedRules := []Rule{}
 	for i, element := range u.elements {
 		rs := findRulesForNumber(element)
 		for _, r := range rs {
@@ -50,15 +55,16 @@ func (u *Update) testUpdate() bool {
 			ff := u.ruleFulfilled(i, r)
 			if !ff {
 				ruleFailed = true
+				failedRules = append(failedRules, r)
 			}
 		}
 	}
 	if !ruleFailed {
 		middle := getMiddleElement(u.elements)
 		overallSum += middle
-		return true
+		return true, []Rule{}
 	}
-	return false
+	return false, failedRules
 }
 
 func (u *Update) ruleValidForUpdate(rule Rule) bool {
