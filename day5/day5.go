@@ -30,26 +30,21 @@ func Day5() {
 	fmt.Println("found", len(updates), "updates")
 
 	for _, u := range updates {
-		u.testUpdate()
+		if !u.testUpdate() {
+			// test if alternative orders work
+		}
 	}
 
 	fmt.Println("Overall Sum:", overallSum)
 }
 
-func (u *Update) testUpdate() {
+func (u *Update) testUpdate() bool {
 	fmt.Println("testing update with:", u.elements)
 	ruleFailed := false
 	for i, element := range u.elements {
 		rs := findRulesForNumber(element)
 		for _, r := range rs {
-			// test if elements from rule are even included
-			elementsInRule := 0
-			for _, v := range u.elements {
-				if r.left == v || r.right == v {
-					elementsInRule++
-				}
-			}
-			if elementsInRule < 2 {
+			if !u.ruleValidForUpdate(r) {
 				continue
 			}
 			ff := u.ruleFulfilled(i, r)
@@ -61,7 +56,23 @@ func (u *Update) testUpdate() {
 	if !ruleFailed {
 		middle := getMiddleElement(u.elements)
 		overallSum += middle
+		return true
 	}
+	return false
+}
+
+func (u *Update) ruleValidForUpdate(rule Rule) bool {
+	hasLeft := false
+	hasRight := false
+	for _, v := range u.elements {
+		if rule.left == v {
+			hasLeft = true
+		}
+		if rule.right == v {
+			hasRight = true
+		}
+	}
+	return hasLeft == true && hasRight == true
 }
 
 func getMiddleElement[T any](a []T) T {
