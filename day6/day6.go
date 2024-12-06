@@ -19,7 +19,6 @@ const (
 
 var playerStatus PlayerStatus = STATUS_UP
 var isLoop bool
-var foundLoops = 0
 
 func Day6() {
 	laborMap := readFile("day6.input")
@@ -43,6 +42,8 @@ func Day6() {
 	fmt.Println("distinct positions:", distinctPositions)
 
 	// Part2: create a new slice and test with each field (what happens if there is a # instead of a .)
+	tries := 0
+	foundLoops := 0
 	for tx := 0; tx < len(laborMap); tx++ {
 		for ty := 0; ty < len(laborMap[tx]); ty++ {
 			testMap := [][]string{}
@@ -60,15 +61,15 @@ func Day6() {
 			}
 
 			isLoop = false
+			tries++
 			checkMap(testMap)
 			if isLoop {
-				fmt.Println("FOUND LOOP")
 				foundLoops++
 			}
 		}
 	}
 
-	fmt.Println("found loops:", foundLoops)
+	fmt.Println("found loops:", foundLoops, "in", tries, "tries")
 
 }
 
