@@ -59,12 +59,6 @@ func Day6() {
 	}
 
 	fmt.Println("distinct positions:", distinctPositions)
-
-	// find first position
-
-	// always find next position
-	// check if next position is already found
-	// if no -> add 1
 }
 
 func findNextPosition(line int, pos int) {
