@@ -42,19 +42,19 @@ func Day6() {
 
 	fmt.Println("distinct positions:", distinctPositions)
 
-	// create a new slice copy and test with each field (what happens if there is a # instead of a .)
+	// Part2: create a new slice and test with each field (what happens if there is a # instead of a .)
 	for tx := 0; tx < len(laborMap); tx++ {
 		for ty := 0; ty < len(laborMap[tx]); ty++ {
 			testMap := [][]string{}
-			for i := 0; i < len(laborMap); i++ {
+			for x := 0; x < len(laborMap); x++ {
 				lineMap := []string{}
-				for j := 0; j < len(laborMap[i]); j++ {
-					if i == tx && j == ty && laborMap[i][j] == "." {
+				for y := 0; y < len(laborMap[x]); y++ {
+					if x == tx && y == ty && laborMap[x][y] == "." {
 						// replace . with #
 						lineMap = append(lineMap, "#")
-					} else {
-						lineMap = append(lineMap, laborMap[i][j])
+						continue
 					}
+					lineMap = append(lineMap, laborMap[x][y])
 				}
 				testMap = append(testMap, lineMap)
 			}
