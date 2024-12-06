@@ -20,33 +20,15 @@ const (
 var playerStatus PlayerStatus = STATUS_UP
 
 var laborMap = [][]string{}
-var guardPositions = [][]int{}
 
 func Day6() {
-	readFile("day6.input")
+	readFile("day6.test")
 
 	for _, v := range laborMap {
 		fmt.Println(v)
 	}
 
-	for _, l := range laborMap {
-		iis := []int{}
-		for range l {
-			iis = append(iis, 0)
-		}
-		guardPositions = append(guardPositions, iis)
-	}
-
-	for li, lm := range laborMap {
-		for i, v := range lm {
-			if v == "^" {
-				fmt.Println("found start position!")
-				playerStatus = STATUS_UP
-				guardPositions[li][i] = 1
-				findNextPosition(li, i)
-			}
-		}
-	}
+	guardPositions := checkMap(laborMap)
 
 	distinctPositions := 0
 	for _, v := range guardPositions {
@@ -61,7 +43,36 @@ func Day6() {
 	fmt.Println("distinct positions:", distinctPositions)
 }
 
-func findNextPosition(line int, pos int) {
+func checkMap(m [][]string) [][]int {
+	var guardPositions = [][]int{}
+
+	for _, l := range m {
+		iis := []int{}
+		for range l {
+			iis = append(iis, 0)
+		}
+		guardPositions = append(guardPositions, iis)
+	}
+
+	for li, lm := range m {
+		for i, v := range lm {
+			if v == "^" {
+				fmt.Println("found start position!")
+				playerStatus = STATUS_UP
+				guardPositions[li][i] = 1
+				findNextPosition(li, i, guardPositions)
+			}
+		}
+	}
+
+	return guardPositions
+}
+
+func findNextPosition(line int, pos int, guardPositions [][]int) {
+	if guardPositions[line][pos] >= 9 {
+		fmt.Println("Skipped because guard Position >= 9")
+		return
+	}
 	switch playerStatus {
 	case STATUS_UP:
 		if line-1 < 0 {
@@ -72,13 +83,13 @@ func findNextPosition(line int, pos int) {
 		if nextPos == "#" {
 			// turn right and check if it can go there!
 			playerStatus = STATUS_RIGHT
-			findNextPosition(line, pos)
+			findNextPosition(line, pos, guardPositions)
 			break
 		}
 		if nextPos == "." || nextPos == "^" {
 			// found
 			guardPositions[line-1][pos] += 1
-			findNextPosition(line-1, pos)
+			findNextPosition(line-1, pos, guardPositions)
 			break
 		}
 		fmt.Println("no more possible positions up...")
@@ -92,13 +103,13 @@ func findNextPosition(line int, pos int) {
 		if nextPos == "#" {
 			// turn left and check if it can go there!
 			playerStatus = STATUS_LEFT
-			findNextPosition(line, pos)
+			findNextPosition(line, pos, guardPositions)
 			break
 		}
 		if nextPos == "." || nextPos == "^" {
 			// found
 			guardPositions[line+1][pos] += 1
-			findNextPosition(line+1, pos)
+			findNextPosition(line+1, pos, guardPositions)
 			break
 		}
 		fmt.Println("no more possible positions down...")
@@ -111,13 +122,13 @@ func findNextPosition(line int, pos int) {
 		if nextPos == "#" {
 			// turn down and check if it can go there!
 			playerStatus = STATUS_DOWN
-			findNextPosition(line, pos)
+			findNextPosition(line, pos, guardPositions)
 			break
 		}
 		if nextPos == "." || nextPos == "^" {
 			// found
 			guardPositions[line][pos+1] += 1
-			findNextPosition(line, pos+1)
+			findNextPosition(line, pos+1, guardPositions)
 			break
 		}
 		fmt.Println("no more possible positions rihgt...")
@@ -130,13 +141,13 @@ func findNextPosition(line int, pos int) {
 		if nextPos == "#" {
 			// turn up and check if it can go there!
 			playerStatus = STATUS_UP
-			findNextPosition(line, pos)
+			findNextPosition(line, pos, guardPositions)
 			break
 		}
 		if nextPos == "." || nextPos == "^" {
 			// found
 			guardPositions[line][pos-1] += 1
-			findNextPosition(line, pos-1)
+			findNextPosition(line, pos-1, guardPositions)
 			break
 		}
 		fmt.Println("no more possible positions left...")
