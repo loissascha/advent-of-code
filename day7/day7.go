@@ -17,7 +17,7 @@ type LineInput struct {
 }
 
 func Day7() {
-	inputs := readFile("day7.test")
+	inputs := readFile("day7.input")
 	fmt.Println(inputs)
 
 	sum := 0
@@ -48,6 +48,14 @@ func (input *LineInput) trySolve() int {
 				sum += v
 			} else if pop == "*" {
 				sum *= v
+			} else if pop == "|" {
+				// take the current sum as string
+				// append the v
+				sumstr := fmt.Sprintf("%v%v", sum, v)
+				// make it as int
+				newsum, err := strconv.Atoi(sumstr)
+				assert.Nil(err, "newsum not possible")
+				sum = newsum
 			} else {
 				fmt.Println("INVALID POP")
 			}
@@ -69,13 +77,14 @@ func generateCombinations(n int) []string {
 	for _, comb := range smallerCombinations {
 		combinations = append(combinations, comb+"+")
 		combinations = append(combinations, comb+"*")
+		combinations = append(combinations, comb+"|")
 	}
 	return combinations
 }
 
 func calculateCombinations(numbers []int) int {
 	spaces := len(numbers) - 1
-	return int(math.Pow(2, float64(spaces)))
+	return int(math.Pow(3, float64(spaces)))
 }
 
 func readFile(filepath string) []LineInput {
