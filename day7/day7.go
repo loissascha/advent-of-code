@@ -3,7 +3,6 @@ package day7
 import (
 	"bufio"
 	"fmt"
-	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -18,7 +17,6 @@ type LineInput struct {
 
 func Day7() {
 	inputs := readFile("day7.input")
-	fmt.Println(inputs)
 
 	sum := 0
 	for _, input := range inputs {
@@ -30,11 +28,9 @@ func Day7() {
 func (input *LineInput) trySolve() int {
 	spaces := len(input.numbers) - 1
 
-	combinations := calculateCombinations(input.numbers)
-
 	operators := generateCombinations(spaces)
 
-	for i := 0; i < combinations; i++ {
+	for i := 0; i < len(operators); i++ {
 		op := operators[i]
 
 		sum := 0
@@ -44,20 +40,21 @@ func (input *LineInput) trySolve() int {
 				continue
 			}
 			pop := op[j-1 : j]
-			if pop == "+" {
+			switch pop {
+			case "+":
 				sum += v
-			} else if pop == "*" {
+				break
+			case "*":
 				sum *= v
-			} else if pop == "|" {
-				// take the current sum as string
-				// append the v
+				break
+			case "|":
 				sumstr := fmt.Sprintf("%v%v", sum, v)
-				// make it as int
 				newsum, err := strconv.Atoi(sumstr)
 				assert.Nil(err, "newsum not possible")
 				sum = newsum
-			} else {
-				fmt.Println("INVALID POP")
+				break
+			default:
+				panic("INVALID POP")
 			}
 		}
 		if sum == input.result {
@@ -80,11 +77,6 @@ func generateCombinations(n int) []string {
 		combinations = append(combinations, comb+"|")
 	}
 	return combinations
-}
-
-func calculateCombinations(numbers []int) int {
-	spaces := len(numbers) - 1
-	return int(math.Pow(3, float64(spaces)))
 }
 
 func readFile(filepath string) []LineInput {
