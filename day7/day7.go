@@ -3,6 +3,7 @@ package day7
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -18,6 +19,63 @@ type LineInput struct {
 func Day7() {
 	inputs := readFile("day7.test")
 	fmt.Println(inputs)
+
+	sum := 0
+	for _, input := range inputs {
+		sum += input.trySolve()
+	}
+	fmt.Println("sum:", sum)
+}
+
+func (input *LineInput) trySolve() int {
+	spaces := len(input.numbers) - 1
+
+	combinations := calculateCombinations(input.numbers)
+
+	operators := generateCombinations(spaces)
+
+	for i := 0; i < combinations; i++ {
+		op := operators[i]
+
+		sum := 0
+		for j, v := range input.numbers {
+			if j == 0 {
+				sum += v
+				continue
+			}
+			pop := op[j-1 : j]
+			if pop == "+" {
+				sum += v
+			} else if pop == "*" {
+				sum *= v
+			} else {
+				fmt.Println("INVALID POP")
+			}
+		}
+		if sum == input.result {
+			return sum
+		}
+	}
+
+	return 0
+}
+
+func generateCombinations(n int) []string {
+	if n == 0 {
+		return []string{""}
+	}
+	smallerCombinations := generateCombinations(n - 1)
+	combinations := []string{}
+	for _, comb := range smallerCombinations {
+		combinations = append(combinations, comb+"+")
+		combinations = append(combinations, comb+"*")
+	}
+	return combinations
+}
+
+func calculateCombinations(numbers []int) int {
+	spaces := len(numbers) - 1
+	return int(math.Pow(2, float64(spaces)))
 }
 
 func readFile(filepath string) []LineInput {
