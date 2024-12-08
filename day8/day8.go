@@ -27,12 +27,13 @@ func parseAntennnas(grid []string) map[string][]Point {
 }
 
 func Day8() {
-	grid := readFile("day8.test")
+	grid := readFile("day8.input")
 	antennas := parseAntennnas(grid)
 	fmt.Println("Antennas:", antennas)
 
 	ps := 0
 
+	antinodes := map[Point]struct{}{}
 	for ant, points := range antennas {
 		for i := 0; i < len(points); i++ {
 			for j := 0; j < len(points); j++ {
@@ -81,26 +82,24 @@ func Day8() {
 
 				a1 := Point{x: a1x, y: a1y}
 				a2 := Point{x: a2x, y: a2y}
-				// a1x, a1y := p1.x-(dx/2), p1.y-(dy/2)
 
 				if inBounds(a1, grid) {
 					fmt.Println("antinote pos:", a1.x, a1.y)
 					drawGridWithAntinote(grid, a1.x, a1.y)
+					antinodes[a1] = struct{}{}
 					ps++
 				}
 
 				if inBounds(a2, grid) {
 					fmt.Println("antinote pos:", a2.x, a2.y)
 					drawGridWithAntinote(grid, a2.x, a2.y)
+					antinodes[a2] = struct{}{}
 					ps++
 				}
-
-				// a2x, a2y := p2.x-(dx/2), p2.y-(dy/2)
-				// fmt.Println("antinote 2 pos:", a2x, a2y)
 			}
 		}
 	}
-	fmt.Println("points:", ps)
+	fmt.Println("points:", len(antinodes))
 }
 
 func drawGridWithAntinote(grid []string, ax int, ay int) {
