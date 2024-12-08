@@ -26,80 +26,115 @@ func parseAntennnas(grid []string) map[string][]Point {
 	return antennas
 }
 
+var antinodes = map[Point]struct{}{}
+
 func Day8() {
 	grid := readFile("day8.input")
 	antennas := parseAntennnas(grid)
 	fmt.Println("Antennas:", antennas)
 
-	ps := 0
+	findAntinodes(grid, antennas)
 
-	antinodes := map[Point]struct{}{}
-	for ant, points := range antennas {
+	for x, g := range grid {
+		for y := 0; y < len(g); y++ {
+			char := g[y : y+1]
+			hasAntinode := false
+			for a, _ := range antinodes {
+				if a.x == x && a.y == y {
+					hasAntinode = true
+					break
+				}
+			}
+
+			if hasAntinode {
+				fmt.Print("#")
+				continue
+			}
+			fmt.Print(char)
+		}
+		fmt.Print("\n")
+	}
+
+	fmt.Println("points:", len(antinodes))
+}
+
+func findAntinodes(grid []string, antennas map[string][]Point) {
+	for _, points := range antennas {
 		for i := 0; i < len(points); i++ {
 			for j := 0; j < len(points); j++ {
 				if i == j {
 					continue
 				}
 				p1, p2 := points[i], points[j]
-				fmt.Println("trying to find antinode point for", ant, "with points", p1, "and", p2)
+				// fmt.Println("trying to find antinode point for", ant, "with points", p1, "and", p2)
 
-				dx, dy := p2.x-p1.x, p2.y-p1.y
+				dx, dy := p1.x-p2.x, p1.y-p2.y
 				if dx < 0 {
 					dx *= -1
 				}
 				if dy < 0 {
 					dy *= -1
 				}
-				fmt.Println("distance x:", dx, "distance y:", dy)
+				// fmt.Println("distance x:", dx, "distance y:", dy)
 
-				a1x := 0
-				if p1.x > p2.x {
-					a1x = p1.x + dx
-				} else if p1.x < p2.x {
-					a1x = p1.x - dx
-				}
-
-				a2x := 0
-				if p2.x > p1.x {
-					a2x = p2.x + dx
-				} else if p2.x < p1.x {
-					a2x = p2.x - dx
-				}
-
-				a1y := 0
-				if p1.y > p2.y {
-					a1y = p1.y + dy
-				} else if p1.y < p2.y {
-					a1y = p1.y - dy
-				}
-
-				a2y := 0
-				if p2.y > p1.y {
-					a2y = p2.y + dy
-				} else if p2.y < p1.y {
-					a2y = p2.y - dy
-				}
-
-				a1 := Point{x: a1x, y: a1y}
-				a2 := Point{x: a2x, y: a2y}
-
-				if inBounds(a1, grid) {
-					fmt.Println("antinote pos:", a1.x, a1.y)
-					drawGridWithAntinote(grid, a1.x, a1.y)
-					antinodes[a1] = struct{}{}
-					ps++
-				}
-
-				if inBounds(a2, grid) {
-					fmt.Println("antinote pos:", a2.x, a2.y)
-					drawGridWithAntinote(grid, a2.x, a2.y)
-					antinodes[a2] = struct{}{}
-					ps++
-				}
+				createAntinotesDir1(p1, p2, dx, dy, 0, 0, grid)
+				createAntinotesDir2(p1, p2, dx, dy, 0, 0, grid)
 			}
 		}
 	}
-	fmt.Println("points:", len(antinodes))
+}
+
+func createAntinotesDir2(p1 Point, p2 Point, dx int, dy int, offsetx int, offsety int, grid []string) {
+	ax := 0
+	if p2.x > p1.x {
+		ax = p2.x + dx
+	} else if p2.x < p1.x {
+		ax = p2.x - dx
+	}
+	ax += offsetx
+
+	ay := 0
+	if p2.y > p1.y {
+		ay = p2.y + dy
+	} else if p2.y < p1.y {
+		ay = p2.y - dy
+	}
+	ay += offsety
+
+	a2 := Point{x: ax, y: ay}
+
+	if inBounds(a2, grid) {
+		// fmt.Println("antinote pos:", a2.x, a2.y)
+		// drawGridWithAntinote(grid, a2.x, a2.y)
+		antinodes[a2] = struct{}{}
+		createAntinotesDir2(p1, p2, dx, dy, offsetx+dx, offsety+dy, grid)
+	}
+}
+
+func createAntinotesDir1(p1 Point, p2 Point, dx int, dy int, offsetx int, offsety int, grid []string) {
+	a1x := 0
+	if p1.x > p2.x {
+		a1x = p1.x + dx
+	} else if p1.x < p2.x {
+		a1x = p1.x - dx
+	}
+	a1x += offsetx
+
+	a1y := 0
+	if p1.y > p2.y {
+		a1y = p1.y + dy
+	} else if p1.y < p2.y {
+		a1y = p1.y - dy
+	}
+	a1y += offsety
+
+	a1 := Point{x: a1x, y: a1y}
+	if inBounds(a1, grid) {
+		// fmt.Println("antinote pos:", a1.x, a1.y)
+		// drawGridWithAntinote(grid, a1.x, a1.y)
+		antinodes[a1] = struct{}{}
+		createAntinotesDir1(p1, p2, dx, dy, offsetx+dx, offsety+dy, grid)
+	}
 }
 
 func drawGridWithAntinote(grid []string, ax int, ay int) {
