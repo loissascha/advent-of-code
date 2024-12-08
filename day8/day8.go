@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/loissascha/go-assert/assert"
 )
@@ -42,6 +43,57 @@ func Day8() {
 	}
 
 	fmt.Println("points:", len(antinodes))
+
+	partTwo(grid)
+}
+
+func partTwo(lines []string) {
+	solution := 0
+	matrix := make([][]string, 0)
+	antennaMap := make(map[string][][]int)
+	for _, line := range lines {
+		if len(line) > 0 {
+			matrix = append(matrix, strings.Split(line, ""))
+		}
+	}
+
+	for i := range matrix {
+		for j := range matrix[i] {
+			if matrix[i][j] != "." {
+				antennaMap[matrix[i][j]] = append(antennaMap[matrix[i][j]], []int{i, j})
+			}
+		}
+	}
+
+	for _, v := range antennaMap {
+		for i := range v {
+			for j := range v {
+				matrix[v[i][0]][v[i][1]] = "#"
+				if i != j {
+					x := v[i][0] + (v[i][0] - v[j][0])
+					y := v[i][1] + (v[i][1] - v[j][1])
+					isValid := x >= 0 && y >= 0 && x < len(matrix) && y < len(matrix[0])
+					for isValid {
+						if isValid {
+							matrix[x][y] = "#"
+						}
+						x += (v[i][0] - v[j][0])
+						y += (v[i][1] - v[j][1])
+						isValid = x >= 0 && y >= 0 && x < len(matrix) && y < len(matrix[0])
+					}
+				}
+			}
+		}
+	}
+	for _, row := range matrix {
+		for _, e := range row {
+			if e == "#" {
+				solution++
+			}
+		}
+	}
+	fmt.Printf("Copy Pasta Part2: %d\n", solution)
+
 }
 
 func findAntinodes(grid []string, antennas map[string][]Point) {
@@ -122,20 +174,6 @@ func createAntinotesDir1(p1 Point, p2 Point, dx int, dy int, offsetx int, offset
 		antinodes[a] = struct{}{}
 		createAntinotesDir1(p1, p2, dx, dy, offsetx+dx, offsety+dy, grid)
 		antennaHasAntidote(p1)
-	}
-}
-
-func drawGridWithAntinote(grid []string, ax int, ay int) {
-	for y, v := range grid {
-		for x := 0; x < len(v); x++ {
-			char := v[x : x+1]
-			if y == ay && x == ax {
-				fmt.Print("#")
-			} else {
-				fmt.Print(char)
-			}
-		}
-		fmt.Print("\n")
 	}
 }
 
