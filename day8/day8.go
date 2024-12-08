@@ -12,20 +12,6 @@ type Point struct {
 	x, y int
 }
 
-func parseAntennnas(grid []string) map[string][]Point {
-	antennas := map[string][]Point{}
-	for y, line := range grid {
-		for x := 0; x < len(line); x++ {
-			char := line[x : x+1]
-			if char != "." && char != "#" {
-				fmt.Println("found antenna for char:", char, "pos:", x, y)
-				antennas[char] = append(antennas[char], Point{x, y})
-			}
-		}
-	}
-	return antennas
-}
-
 var antinodes = map[Point]struct{}{}
 
 func Day8() {
@@ -39,7 +25,7 @@ func Day8() {
 		for y := 0; y < len(g); y++ {
 			char := g[y : y+1]
 			hasAntinode := false
-			for a, _ := range antinodes {
+			for a := range antinodes {
 				if a.x == x && a.y == y {
 					hasAntinode = true
 					break
@@ -101,38 +87,34 @@ func createAntinotesDir2(p1 Point, p2 Point, dx int, dy int, offsetx int, offset
 	}
 	ay += offsety
 
-	a2 := Point{x: ax, y: ay}
+	a := Point{x: ax, y: ay}
 
-	if inBounds(a2, grid) {
-		// fmt.Println("antinote pos:", a2.x, a2.y)
-		// drawGridWithAntinote(grid, a2.x, a2.y)
-		antinodes[a2] = struct{}{}
+	if inBounds(a, grid) {
+		antinodes[a] = struct{}{}
 		createAntinotesDir2(p1, p2, dx, dy, offsetx+dx, offsety+dy, grid)
 	}
 }
 
 func createAntinotesDir1(p1 Point, p2 Point, dx int, dy int, offsetx int, offsety int, grid []string) {
-	a1x := 0
+	ax := 0
 	if p1.x > p2.x {
-		a1x = p1.x + dx
+		ax = p1.x + dx
 	} else if p1.x < p2.x {
-		a1x = p1.x - dx
+		ax = p1.x - dx
 	}
-	a1x += offsetx
+	ax += offsetx
 
-	a1y := 0
+	ay := 0
 	if p1.y > p2.y {
-		a1y = p1.y + dy
+		ay = p1.y + dy
 	} else if p1.y < p2.y {
-		a1y = p1.y - dy
+		ay = p1.y - dy
 	}
-	a1y += offsety
+	ay += offsety
 
-	a1 := Point{x: a1x, y: a1y}
-	if inBounds(a1, grid) {
-		// fmt.Println("antinote pos:", a1.x, a1.y)
-		// drawGridWithAntinote(grid, a1.x, a1.y)
-		antinodes[a1] = struct{}{}
+	a := Point{x: ax, y: ay}
+	if inBounds(a, grid) {
+		antinodes[a] = struct{}{}
 		createAntinotesDir1(p1, p2, dx, dy, offsetx+dx, offsety+dy, grid)
 	}
 }
@@ -153,6 +135,20 @@ func drawGridWithAntinote(grid []string, ax int, ay int) {
 
 func inBounds(p Point, grid []string) bool {
 	return p.y >= 0 && p.y < len(grid) && p.x >= 0 && p.x < len(grid[p.y])
+}
+
+func parseAntennnas(grid []string) map[string][]Point {
+	antennas := map[string][]Point{}
+	for y, line := range grid {
+		for x := 0; x < len(line); x++ {
+			char := line[x : x+1]
+			if char != "." && char != "#" {
+				fmt.Println("found antenna for char:", char, "pos:", x, y)
+				antennas[char] = append(antennas[char], Point{x, y})
+			}
+		}
+	}
+	return antennas
 }
 
 func readFile(filepath string) []string {
