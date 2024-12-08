@@ -21,9 +21,9 @@ func Day8() {
 
 	findAntinodes(grid, antennas)
 
-	for x, g := range grid {
-		for y := 0; y < len(g); y++ {
-			char := g[y : y+1]
+	for y, g := range grid {
+		for x := 0; x < len(g); x++ {
+			char := g[x : x+1]
 			hasAntinode := false
 			for a := range antinodes {
 				if a.x == x && a.y == y {
@@ -70,6 +70,10 @@ func findAntinodes(grid []string, antennas map[string][]Point) {
 	}
 }
 
+func antennaHasAntidote(p Point) {
+	antinodes[p] = struct{}{}
+}
+
 func createAntinotesDir2(p1 Point, p2 Point, dx int, dy int, offsetx int, offsety int, grid []string) {
 	ax := 0
 	if p2.x > p1.x {
@@ -92,6 +96,7 @@ func createAntinotesDir2(p1 Point, p2 Point, dx int, dy int, offsetx int, offset
 	if inBounds(a, grid) {
 		antinodes[a] = struct{}{}
 		createAntinotesDir2(p1, p2, dx, dy, offsetx+dx, offsety+dy, grid)
+		antennaHasAntidote(p2)
 	}
 }
 
@@ -116,6 +121,7 @@ func createAntinotesDir1(p1 Point, p2 Point, dx int, dy int, offsetx int, offset
 	if inBounds(a, grid) {
 		antinodes[a] = struct{}{}
 		createAntinotesDir1(p1, p2, dx, dy, offsetx+dx, offsety+dy, grid)
+		antennaHasAntidote(p1)
 	}
 }
 
