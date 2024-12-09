@@ -34,7 +34,7 @@ type ElemType interface {
 }
 
 func Day9() {
-	file, err := os.Open("day9.input")
+	file, err := os.Open("day9.test")
 	assert.Nil(err, "Can't open file")
 	defer file.Close()
 
@@ -42,13 +42,17 @@ func Day9() {
 	for scanner.Scan() {
 		line := scanner.Text()
 		fmt.Println(line)
-		converted := convertLine(line)
-		fmt.Println(converted)
-		reordered := reorderConvertedLine(converted)
-		fmt.Println(reordered)
-		checksum := checkSum(reordered)
-		fmt.Println("Checksum:", checksum)
+		part1(line)
 	}
+}
+
+func part1(line string) {
+	converted := convertLine(line)
+	fmt.Println(converted)
+	reordered := reorderConvertedLine(converted)
+	fmt.Println(reordered)
+	checksum := checkSum(reordered)
+	fmt.Println("Checksum:", checksum)
 }
 
 func checkSum(elements []ElemType) int {
