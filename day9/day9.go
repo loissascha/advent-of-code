@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 
 	"github.com/loissascha/go-assert/assert"
@@ -50,7 +51,11 @@ func Day9() {
 func part2(line string) {
 	converted := convertLine(line)
 	fmt.Println(converted)
-	reorderConvertedLinev2(converted)
+	reordered := reorderConvertedLinev2v2(converted)
+	fmt.Println(reordered)
+	visualizeElements(reordered)
+	checksum := checkSum(reordered)
+	fmt.Println("Checksum:", checksum)
 }
 
 func part1(line string) {
@@ -58,70 +63,59 @@ func part1(line string) {
 	fmt.Println(converted)
 	reordered := reorderConvertedLine(converted)
 	fmt.Println(reordered)
+	visualizeElements(reordered)
 	checksum := checkSum(reordered)
 	fmt.Println("Checksum:", checksum)
 }
 
-func reorderConvertedLinev2(elements []ElemType) {
-	startOffset := 0
-	for true {
-		firstSpaceElementIndex := getFirstSpaceElement(elements, startOffset)
-		spaceCounts := getSpaceCount(elements, firstSpaceElementIndex)
-		fmt.Println("Space counts:", spaceCounts)
-		getLastNumElementStartIndex := len(elements)
+func visualizeElements(elements []ElemType) {
+	for _, v := range elements {
+		_, spaceOk := v.(SpaceType)
+		if spaceOk {
+			fmt.Print(".")
+			continue
+		}
+		fmt.Print(v.getNum())
+	}
+	fmt.Print("\n")
+}
 
-		putInNum := 0
-		putInCount := 0
-		foundFittingElement := false
-		lastNumElementIndex := 0
+func reorderConvertedLinev2v2(elements []ElemType) []ElemType {
+	workedElementIds := []int{}
+	for i := len(elements) - 1; i >= 0; i-- {
+		element := elements[i]
+		_, ok := element.(NumType)
+		if !ok {
+			continue
+		}
+		if slices.Contains(workedElementIds, element.getNum()) {
+			continue
+		}
+		count := getNumElementCount(elements, element.getNum(), i)
+		workedElementIds = append(workedElementIds, element.getNum())
 
-		for true {
-			lastNumElementIndex = getLastNumElement(elements, getLastNumElementStartIndex)
-			numElem := elements[lastNumElementIndex]
-			elemCounts := getNumElementCount(elements, numElem.getNum(), lastNumElementIndex)
-			fmt.Println("Elem counts for num", numElem.getNum(), ":", elemCounts)
-
-			// fits
-			if elemCounts <= spaceCounts {
-				putInNum = numElem.getNum()
-				putInCount = elemCounts
-				foundFittingElement = true
-				fmt.Println("fits")
+		for j := 0; j < len(elements); j++ {
+			if j >= i {
 				break
 			}
+			e := elements[j]
+			_, ok := e.(SpaceType)
+			if !ok {
+				continue
+			}
+			spaces := getSpaceCount(elements, j)
 
-			// if no -> retry
-			getLastNumElementStartIndex = lastNumElementIndex - elemCounts
-			if getLastNumElementStartIndex < firstSpaceElementIndex {
-				fmt.Println("BREAK")
+			if spaces >= count {
+				// found element
+				for y := 0; y < count; y++ {
+					elements[j+y] = NumType{num: element.getNum()}
+					elements[i-y] = SpaceType{}
+				}
 				break
 			}
-		}
-
-		if lastNumElementIndex < firstSpaceElementIndex {
-			fmt.Println("break1")
-			break
-		}
-
-		if foundFittingElement {
-			// replace spaces with num
-			// replace num with spaces
-			for j := 0; j < putInCount; j++ {
-				ni := j + firstSpaceElementIndex
-				si := lastNumElementIndex - j
-				fmt.Println("ni", ni, "si", si)
-				elements[ni] = NumType{num: putInNum}
-				elements[si] = SpaceType{}
-				startOffset = 0
-			}
-
-			fmt.Println(elements)
-		} else {
-			fmt.Println("not found a fitting element for this space gap!", spaceCounts)
-			startOffset += firstSpaceElementIndex
 		}
 	}
-	fmt.Println(elements)
+	return elements
 }
 
 func getNumElementCount(e []ElemType, num int, startIndex int) int {
@@ -178,7 +172,7 @@ func checkSum(elements []ElemType) int {
 	for i, v := range elements {
 		_, st := v.(SpaceType)
 		if st {
-			break
+			continue
 		}
 		nt := v.(NumType)
 		sum += (nt.getNum() * i)
