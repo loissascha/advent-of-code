@@ -15,22 +15,33 @@ const (
 )
 
 type NumType struct {
-	num int
+	num   int
+	tries int
 }
 
 func (n NumType) getNum() int {
 	return n.num
 }
 
+func (n NumType) getTries() int {
+	return n.tries
+}
+
 type SpaceType struct {
+	tries int
 }
 
 func (n SpaceType) getNum() int {
 	return 1
 }
 
+func (n SpaceType) getTries() int {
+	return n.tries
+}
+
 type ElemType interface {
 	getNum() int
+	getTries() int
 }
 
 func Day9() {
@@ -43,7 +54,14 @@ func Day9() {
 		line := scanner.Text()
 		fmt.Println(line)
 		part1(line)
+		part2(line)
 	}
+}
+
+func part2(line string) {
+	converted := convertLine(line)
+	fmt.Println(converted)
+	reorderConvertedLinev2(converted)
 }
 
 func part1(line string) {
@@ -53,6 +71,125 @@ func part1(line string) {
 	fmt.Println(reordered)
 	checksum := checkSum(reordered)
 	fmt.Println("Checksum:", checksum)
+}
+
+func reorderConvertedLinev2(elements []ElemType) {
+	startOffset := 0
+	for true {
+		firstSpaceElementIndex := getFirstSpaceElement(elements, startOffset)
+		spaceCounts := getSpaceCount(elements, firstSpaceElementIndex)
+		fmt.Println("Space counts:", spaceCounts)
+		getLastNumElementStartIndex := len(elements)
+
+		putInNum := 0
+		putInCount := 0
+		foundFittingElement := false
+		lastNumElementIndex := 0
+		stop := false
+
+		for true {
+			lastNumElementIndex = getLastNumElement(elements, getLastNumElementStartIndex)
+			numElem := elements[lastNumElementIndex]
+			if numElem.getTries() > 0 {
+				stop = true
+				break
+			}
+			elemCounts := getNumElementCount(elements, numElem.getNum(), lastNumElementIndex)
+			fmt.Println("Elem counts for num", numElem.getNum(), ":", elemCounts)
+
+			// fits
+			if elemCounts <= spaceCounts {
+				putInNum = numElem.getNum()
+				putInCount = elemCounts
+				foundFittingElement = true
+				fmt.Println("fits")
+				break
+			}
+
+			// if no -> retry
+			getLastNumElementStartIndex = lastNumElementIndex - elemCounts
+			if getLastNumElementStartIndex >= firstSpaceElementIndex {
+				break
+			}
+		}
+
+		if stop {
+			fmt.Println(elements)
+			fmt.Println("stop")
+			break
+		}
+
+		// if lastNumElementIndex < firstSpaceElementIndex {
+		// 	fmt.Println("break1")
+		// 	break
+		// }
+
+		if foundFittingElement {
+			// replace spaces with num
+			// replace num with spaces
+			for j := 0; j < putInCount; j++ {
+				ni := j + firstSpaceElementIndex
+				si := lastNumElementIndex - j
+				fmt.Println("ni", ni, "si", si)
+				elements[ni] = NumType{num: putInNum, tries: 1}
+				elements[si] = SpaceType{tries: 1}
+			}
+
+			fmt.Println(elements)
+		} else {
+			fmt.Println("not found a fitting element for this space gap!")
+			startOffset += firstSpaceElementIndex
+		}
+	}
+	fmt.Println(elements)
+}
+
+func getNumElementCount(e []ElemType, num int, startIndex int) int {
+	count := 0
+	for i := len(e) - 1; i >= 0; i-- {
+		if i > startIndex {
+			continue
+		}
+		v, ok := e[i].(NumType)
+		if !ok {
+			break
+		}
+		if v.getNum() != num {
+			break
+		}
+		count++
+	}
+	return count
+}
+
+func getSpaceCount(e []ElemType, startIndex int) int {
+	count := 0
+	for i, v := range e {
+		if i < startIndex {
+			continue
+		}
+		_, ok := v.(SpaceType)
+		if !ok {
+			break
+		}
+		count++
+	}
+	return count
+}
+
+func reorderConvertedLine(elements []ElemType) []ElemType {
+	for true {
+		firstSpaceElementIndex := getFirstSpaceElement(elements, 0)
+		lastNumElementIndex := getLastNumElement(elements, len(elements))
+		if firstSpaceElementIndex >= lastNumElementIndex {
+			break
+		}
+
+		elements = replaceElementAtPos(elements, elements[lastNumElementIndex], firstSpaceElementIndex)
+		elements = replaceElementAtPos(elements, SpaceType{}, lastNumElementIndex)
+	}
+
+	return elements
 }
 
 func checkSum(elements []ElemType) int {
@@ -70,28 +207,16 @@ func checkSum(elements []ElemType) int {
 	return sum
 }
 
-func reorderConvertedLine(elements []ElemType) []ElemType {
-	for true {
-		firstSpaceElementIndex := getFirstSpaceElement(elements)
-		lastNumElementIndex := getLastNumElement(elements)
-		if firstSpaceElementIndex >= lastNumElementIndex {
-			break
-		}
-
-		elements = replaceElementAtPos(elements, elements[lastNumElementIndex], firstSpaceElementIndex)
-		elements = replaceElementAtPos(elements, SpaceType{}, lastNumElementIndex)
-	}
-
-	return elements
-}
-
 func replaceElementAtPos(elements []ElemType, e ElemType, pos int) []ElemType {
 	elements[pos] = e
 	return elements
 }
 
-func getLastNumElement(e []ElemType) int {
+func getLastNumElement(e []ElemType, startIndex int) int {
 	for i := len(e) - 1; i >= 0; i-- {
+		if i > startIndex {
+			continue
+		}
 		_, ok := e[i].(NumType)
 		if ok {
 			return i
@@ -100,8 +225,11 @@ func getLastNumElement(e []ElemType) int {
 	return -1
 }
 
-func getFirstSpaceElement(e []ElemType) int {
+func getFirstSpaceElement(e []ElemType, startOffset int) int {
 	for i, v := range e {
+		if i < startOffset {
+			continue
+		}
 		_, ok := v.(SpaceType)
 		if ok {
 			return i
