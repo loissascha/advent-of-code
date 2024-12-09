@@ -35,7 +35,7 @@ type ElemType interface {
 }
 
 func Day9() {
-	file, err := os.Open("day9.test")
+	file, err := os.Open("day9.input")
 	assert.Nil(err, "Can't open file")
 	defer file.Close()
 
