@@ -15,33 +15,22 @@ const (
 )
 
 type NumType struct {
-	num   int
-	tries int
+	num int
 }
 
 func (n NumType) getNum() int {
 	return n.num
 }
 
-func (n NumType) getTries() int {
-	return n.tries
-}
-
 type SpaceType struct {
-	tries int
 }
 
 func (n SpaceType) getNum() int {
 	return 1
 }
 
-func (n SpaceType) getTries() int {
-	return n.tries
-}
-
 type ElemType interface {
 	getNum() int
-	getTries() int
 }
 
 func Day9() {
@@ -85,15 +74,10 @@ func reorderConvertedLinev2(elements []ElemType) {
 		putInCount := 0
 		foundFittingElement := false
 		lastNumElementIndex := 0
-		stop := false
 
 		for true {
 			lastNumElementIndex = getLastNumElement(elements, getLastNumElementStartIndex)
 			numElem := elements[lastNumElementIndex]
-			if numElem.getTries() > 0 {
-				stop = true
-				break
-			}
 			elemCounts := getNumElementCount(elements, numElem.getNum(), lastNumElementIndex)
 			fmt.Println("Elem counts for num", numElem.getNum(), ":", elemCounts)
 
@@ -108,21 +92,16 @@ func reorderConvertedLinev2(elements []ElemType) {
 
 			// if no -> retry
 			getLastNumElementStartIndex = lastNumElementIndex - elemCounts
-			if getLastNumElementStartIndex >= firstSpaceElementIndex {
+			if getLastNumElementStartIndex < firstSpaceElementIndex {
+				fmt.Println("BREAK")
 				break
 			}
 		}
 
-		if stop {
-			fmt.Println(elements)
-			fmt.Println("stop")
+		if lastNumElementIndex < firstSpaceElementIndex {
+			fmt.Println("break1")
 			break
 		}
-
-		// if lastNumElementIndex < firstSpaceElementIndex {
-		// 	fmt.Println("break1")
-		// 	break
-		// }
 
 		if foundFittingElement {
 			// replace spaces with num
@@ -131,13 +110,14 @@ func reorderConvertedLinev2(elements []ElemType) {
 				ni := j + firstSpaceElementIndex
 				si := lastNumElementIndex - j
 				fmt.Println("ni", ni, "si", si)
-				elements[ni] = NumType{num: putInNum, tries: 1}
-				elements[si] = SpaceType{tries: 1}
+				elements[ni] = NumType{num: putInNum}
+				elements[si] = SpaceType{}
+				startOffset = 0
 			}
 
 			fmt.Println(elements)
 		} else {
-			fmt.Println("not found a fitting element for this space gap!")
+			fmt.Println("not found a fitting element for this space gap!", spaceCounts)
 			startOffset += firstSpaceElementIndex
 		}
 	}
