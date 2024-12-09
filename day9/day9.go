@@ -14,6 +14,25 @@ const (
 	SPACE
 )
 
+type NumType struct {
+	num int
+}
+
+func (n NumType) getNum() int {
+	return n.num
+}
+
+type SpaceType struct {
+}
+
+func (n SpaceType) getNum() int {
+	return 1
+}
+
+type ElemType interface {
+	getNum() int
+}
+
 func Day9() {
 	file, err := os.Open("day9.input")
 	assert.Nil(err, "Can't open file")
@@ -26,80 +45,71 @@ func Day9() {
 		converted := convertLine(line)
 		fmt.Println(converted)
 		reordered := reorderConvertedLine(converted)
+		fmt.Println(reordered)
 		checksum := checkSum(reordered)
 		fmt.Println("Checksum:", checksum)
 	}
 }
 
-func checkSum(line string) int {
-	id := 0
-	checksum := 0
-	for i := 0; i < len(line); i++ {
-		char := line[i : i+1]
-		if char == "." {
+func checkSum(elements []ElemType) int {
+	sum := 0
+
+	for i, v := range elements {
+		_, st := v.(SpaceType)
+		if st {
 			break
 		}
-		num, err := strconv.Atoi(char)
-		assert.Nil(err, "Can't convert num checksum")
-		checksum += (num * id)
-		id++
+		nt := v.(NumType)
+		sum += (nt.getNum() * i)
 	}
-	return checksum
+
+	return sum
 }
 
-func reorderConvertedLine(line string) string {
-	result := line
-
+func reorderConvertedLine(elements []ElemType) []ElemType {
 	for true {
-		firstDot := getFirstDot(result)
-		lastNonDot := getLastNonDot(result)
-		if firstDot >= lastNonDot {
+		firstSpaceElementIndex := getFirstSpaceElement(elements)
+		lastNumElementIndex := getLastNumElement(elements)
+		if firstSpaceElementIndex >= lastNumElementIndex {
 			break
 		}
-		lastChar := getCharPos(result, lastNonDot)
-		result = replaceLineCharAtPos(result, lastChar, firstDot)
-		result = replaceLineCharAtPos(result, ".", lastNonDot)
-		fmt.Println(result)
+
+		elements = replaceElementAtPos(elements, elements[lastNumElementIndex], firstSpaceElementIndex)
+		elements = replaceElementAtPos(elements, SpaceType{}, lastNumElementIndex)
 	}
 
-	return result
+	return elements
 }
 
-func replaceLineCharAtPos(line string, char string, pos int) string {
-	result := line[0:pos]
-	result += char
-	result += line[pos+1:]
-	return result
+func replaceElementAtPos(elements []ElemType, e ElemType, pos int) []ElemType {
+	elements[pos] = e
+	return elements
 }
 
-func getCharPos(str string, i int) string {
-	return str[i : i+1]
-}
-
-func getFirstDot(str string) int {
-	for i := 0; i < len(str); i++ {
-		char := str[i : i+1]
-		if char == "." {
+func getLastNumElement(e []ElemType) int {
+	for i := len(e) - 1; i >= 0; i-- {
+		_, ok := e[i].(NumType)
+		if ok {
 			return i
 		}
 	}
 	return -1
 }
 
-func getLastNonDot(str string) int {
-	for i := len(str) - 1; i >= 0; i-- {
-		char := str[i : i+1]
-		if char != "." {
+func getFirstSpaceElement(e []ElemType) int {
+	for i, v := range e {
+		_, ok := v.(SpaceType)
+		if ok {
 			return i
 		}
 	}
 	return -1
 }
 
-func convertLine(line string) string {
+func convertLine(line string) []ElemType {
+	rm := []ElemType{}
 	id := 0
 	readingType := BLOCKS
-	result := ""
 	for i := 0; i < len(line); i++ {
 		char := line[i : i+1]
 
@@ -108,7 +118,7 @@ func convertLine(line string) string {
 			num, err := strconv.Atoi(char)
 			assert.Nil(err, "Can't convert num")
 			for j := 0; j < num; j++ {
-				result = fmt.Sprintf("%v%v", result, id)
+				rm = append(rm, NumType{num: id})
 			}
 			id++
 			readingType = SPACE
@@ -117,7 +127,7 @@ func convertLine(line string) string {
 			num, err := strconv.Atoi(char)
 			assert.Nil(err, "Can't convert num")
 			for j := 0; j < num; j++ {
-				result = fmt.Sprintf("%v.", result)
+				rm = append(rm, SpaceType{})
 			}
 			readingType = BLOCKS
 			break
@@ -126,5 +136,5 @@ func convertLine(line string) string {
 			break
 		}
 	}
-	return result
+	return rm
 }
