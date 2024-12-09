@@ -51,7 +51,7 @@ func Day9() {
 func part2(line string) {
 	converted := convertLine(line)
 	fmt.Println(converted)
-	reordered := reorderConvertedLinev2v2(converted)
+	reordered := reorderConvertedLinev2(converted)
 	fmt.Println(reordered)
 	visualizeElements(reordered)
 	checksum := checkSum(reordered)
@@ -80,7 +80,7 @@ func visualizeElements(elements []ElemType) {
 	fmt.Print("\n")
 }
 
-func reorderConvertedLinev2v2(elements []ElemType) []ElemType {
+func reorderConvertedLinev2(elements []ElemType) []ElemType {
 	workedElementIds := []int{}
 	for i := len(elements) - 1; i >= 0; i-- {
 		element := elements[i]
