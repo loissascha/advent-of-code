@@ -17,7 +17,7 @@ type TrailHead struct {
 func Day10() {
 	m := [][]int{}
 
-	file, err := os.Open("day10.test")
+	file, err := os.Open("day10.input")
 	assert.Nil(err, "Can't open file")
 	defer file.Close()
 
@@ -40,26 +40,28 @@ func Day10() {
 
 func startTrails(m [][]int) {
 	sumTrails := 0
+	sumTrails2 := 0
 	for y, line := range m {
 		for x, num := range line {
 			if num == 0 {
-				// if m[y][x] == 0 {
-				// 	fmt.Println("correct")
-				// }
-				possibleTrails := findPossibleNines(m, num, x, y)
+				// part 1
+				possibleNines := findPossibleNines(m, num, x, y)
 				trails := []TrailHead{}
-				for _, v := range possibleTrails {
+				for _, v := range possibleNines {
 					trails = addTrailHead(trails, v)
 				}
 				fmt.Println("Possible Nines:", len(trails))
 				fmt.Println(trails)
 				sumTrails += len(trails)
-				// sumTrails += possibleTrails
-				// fmt.Println("Possible Trails:", possibleTrails)
+
+				// part 2
+				possibleTrails := findNextNum(m, num, x, y)
+				sumTrails2 += possibleTrails
 			}
 		}
 	}
 	fmt.Println("sumtrails:", sumTrails)
+	fmt.Println("sumtrails2:", sumTrails2)
 }
 
 func addTrailHead(e []TrailHead, i TrailHead) []TrailHead {
