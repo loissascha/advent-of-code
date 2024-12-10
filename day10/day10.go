@@ -42,13 +42,9 @@ func Day10() {
 
 	startTrails(m)
 
-	sum := 0
 	for _, line := range hasPath {
-		for _, num := range line {
-			sum += num
-		}
+		fmt.Println(line)
 	}
-	fmt.Println("sum:", sum)
 }
 
 func startTrails(m [][]int) {
@@ -61,7 +57,7 @@ func startTrails(m [][]int) {
 				// }
 				possibleTrails := findNextNum(m, num, x, y)
 				sumTrails += possibleTrails
-				fmt.Println("Possible Trails:", possibleTrails)
+				// fmt.Println("Possible Trails:", possibleTrails)
 			}
 		}
 	}
@@ -73,58 +69,54 @@ func findNextNum(m [][]int, currentNum int, x int, y int) (possibleTrails int) {
 	if y-1 >= 0 {
 		top := m[y-1][x]
 		if top == currentNum+1 {
-			if hasPath[y-1][x] != 1 {
-				fmt.Println("top field:", top)
-				if top == 9 {
-					trails++
-				}
-				trails += findNextNum(m, top, x, y-1)
-				hasPath[y-1][x] = 1
+			// fmt.Println("top field:", top)
+			if top == 9 {
+				trails++
 			}
+			trails += findNextNum(m, top, x, y-1)
 		}
 	}
 
 	if y+1 < len(m) {
 		bottom := m[y+1][x]
 		if bottom == currentNum+1 {
-			if hasPath[y+1][x] != 1 {
-				fmt.Println("bottom field:", bottom)
-				if bottom == 9 {
-					trails++
-				}
-				trails += findNextNum(m, bottom, x, y+1)
-				hasPath[y+1][x] = 1
+			// fmt.Println("bottom field:", bottom)
+			if bottom == 9 {
+				trails++
 			}
+			trails += findNextNum(m, bottom, x, y+1)
 		}
 	}
 
 	if x-1 >= 0 {
 		left := m[y][x-1]
 		if left == currentNum+1 {
-			if hasPath[y][x-1] != 1 {
-				fmt.Println("left field:", left)
-				if left == 9 {
-					trails++
-				}
-				trails += findNextNum(m, left, x-1, y)
-				hasPath[y][x-1] = 1
+			// fmt.Println("left field:", left)
+			if left == 9 {
+				trails++
 			}
+			trails += findNextNum(m, left, x-1, y)
 		}
 	}
 
 	if x+1 < len(m[y]) {
 		right := m[y][x+1]
 		if right == currentNum+1 {
-			if hasPath[y][x+1] != 1 {
-				fmt.Println("right field:", right)
-				if right == 9 {
-					trails++
-				}
-				trails += findNextNum(m, right, x+1, y)
-				hasPath[y][x+1] = 1
+			// fmt.Println("right field:", right)
+			if right == 9 {
+				trails++
 			}
+			trails += findNextNum(m, right, x+1, y)
 		}
 	}
+
+	if trails > 0 {
+		hasPath[y][x] = trails
+	}
+
+	// if currentNum == 8 && trails > 1 {
+	// 	return 1
+	// }
 
 	return trails
 }
