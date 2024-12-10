@@ -9,7 +9,10 @@ import (
 	"github.com/loissascha/go-assert/assert"
 )
 
-var hasPath = [][]int{}
+type TrailHead struct {
+	x int
+	y int
+}
 
 func Day10() {
 	m := [][]int{}
@@ -32,19 +35,7 @@ func Day10() {
 		m = append(m, l)
 	}
 
-	for i := 0; i < len(m); i++ {
-		rl := []int{}
-		for j := 0; j < len(m[i]); j++ {
-			rl = append(rl, 0)
-		}
-		hasPath = append(hasPath, rl)
-	}
-
 	startTrails(m)
-
-	for _, line := range hasPath {
-		fmt.Println(line)
-	}
 }
 
 func startTrails(m [][]int) {
@@ -55,13 +46,82 @@ func startTrails(m [][]int) {
 				// if m[y][x] == 0 {
 				// 	fmt.Println("correct")
 				// }
-				possibleTrails := findNextNum(m, num, x, y)
-				sumTrails += possibleTrails
+				possibleTrails := findPossibleNines(m, num, x, y)
+				trails := []TrailHead{}
+				for _, v := range possibleTrails {
+					trails = addTrailHead(trails, v)
+				}
+				fmt.Println("Possible Nines:", len(trails))
+				fmt.Println(trails)
+				sumTrails += len(trails)
+				// sumTrails += possibleTrails
 				// fmt.Println("Possible Trails:", possibleTrails)
 			}
 		}
 	}
 	fmt.Println("sumtrails:", sumTrails)
+}
+
+func addTrailHead(e []TrailHead, i TrailHead) []TrailHead {
+	found := false
+	for _, v := range e {
+		if v.x == i.x && v.y == i.y {
+			found = true
+		}
+	}
+	if !found {
+		e = append(e, i)
+	}
+	return e
+}
+
+func findPossibleNines(m [][]int, currentNum int, x int, y int) []TrailHead {
+	trails := []TrailHead{}
+	if y-1 >= 0 {
+		top := m[y-1][x]
+		if top == currentNum+1 {
+			// fmt.Println("top field:", top)
+			if top == 9 {
+				trails = addTrailHead(trails, TrailHead{x: x, y: y - 1})
+			}
+			trails = append(trails, findPossibleNines(m, top, x, y-1)...)
+		}
+	}
+
+	if y+1 < len(m) {
+		bottom := m[y+1][x]
+		if bottom == currentNum+1 {
+			// fmt.Println("bottom field:", bottom)
+			if bottom == 9 {
+				trails = addTrailHead(trails, TrailHead{x: x, y: y + 1})
+			}
+			trails = append(trails, findPossibleNines(m, bottom, x, y+1)...)
+		}
+	}
+
+	if x-1 >= 0 {
+		left := m[y][x-1]
+		if left == currentNum+1 {
+			// fmt.Println("left field:", left)
+			if left == 9 {
+				trails = addTrailHead(trails, TrailHead{x: x - 1, y: y})
+			}
+			trails = append(trails, findPossibleNines(m, left, x-1, y)...)
+		}
+	}
+
+	if x+1 < len(m[y]) {
+		right := m[y][x+1]
+		if right == currentNum+1 {
+			// fmt.Println("right field:", right)
+			if right == 9 {
+				trails = addTrailHead(trails, TrailHead{x: x + 1, y: y})
+			}
+			trails = append(trails, findPossibleNines(m, right, x+1, y)...)
+		}
+	}
+
+	return trails
 }
 
 func findNextNum(m [][]int, currentNum int, x int, y int) (possibleTrails int) {
@@ -108,10 +168,6 @@ func findNextNum(m [][]int, currentNum int, x int, y int) (possibleTrails int) {
 			}
 			trails += findNextNum(m, right, x+1, y)
 		}
-	}
-
-	if trails > 0 {
-		hasPath[y][x] = trails
 	}
 
 	// if currentNum == 8 && trails > 1 {
