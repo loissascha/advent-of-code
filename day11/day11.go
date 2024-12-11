@@ -10,84 +10,60 @@ import (
 	"github.com/loissascha/go-assert/assert"
 )
 
-var stoneCount = 0
-
 func Day11() {
 	input := readFile("day11.input")
 	fmt.Println("Input:", input)
 	stones := inputToStones(input)
 	fmt.Println("stones:", stones)
-	// newStones := []int{}
-	for si, stone := range stones {
-		// stoneRes := []int{stone}
-		blink(stone, 75)
-		// for i := 0; i < 75; i++ {
-		// 	stoneRes = blink(stoneRes)
-		// 	fmt.Println("stone", si, "run", i)
-		// }
-		fmt.Println("finished with stone", si)
-		// newStones = append(newStones, stoneRes...)
+	for i := 0; i < 75; i++ {
+		stones = blink(stones)
 	}
-	// fmt.Println("stones:", newStones)
-	fmt.Println("stones count:", stoneCount)
+
+	sum := 0
+	for _, count := range stones {
+		sum += count
+	}
+	fmt.Println("stones:", sum)
 }
 
-func blink(stone int, calculationsLeft int) {
-	// res := []int{}
-	// for _, stone := range stones {
-	if calculationsLeft <= 0 {
-		stoneCount++
-		fmt.Println("reached end! stoneCount increased")
-		return
+func blink(stones map[int]int) map[int]int {
+	newStones := make(map[int]int)
+	for stone, count := range stones {
+		fmt.Println("stone", stone, "with count", count)
+		stoneStr := fmt.Sprintf("%v", stone)
+		digits := len(stoneStr)
+		if stone == 0 {
+			// rule 1
+			newStones[1] += count
+		} else if digits%2 == 0 {
+			// rule 2
+			firstStone := stoneStr[0 : digits/2]
+			secondStone := stoneStr[digits/2:]
+			fn, err := strconv.Atoi(firstStone)
+			assert.Nil(err, "strconv first")
+			sn, err := strconv.Atoi(secondStone)
+			assert.Nil(err, "strconv second")
+			s1 := fn
+			s2 := sn
+			newStones[s1] += count
+			newStones[s2] += count
+		} else {
+			n := stone * 2024
+			newStones[n] += count
+		}
 	}
-	// fmt.Println("blink for stone", stone, "with calculationsLeft:", calculationsLeft, "stone count:", stoneCount)
-	calculationsLeft--
-	stoneStr := fmt.Sprintf("%v", stone)
-	digits := len(stoneStr)
-	if stone == 0 {
-		// rule 1
-		// fmt.Println("rule 1 for stone:", stone)
-		stone = 1
-		// stoneCount++
-		blink(1, calculationsLeft)
-		// res = append(res, stone)
-	} else if digits%2 == 0 {
-		// rule 2
-		// fmt.Println("rule 2 for stone:", stone)
-		firstStone := stoneStr[0 : digits/2]
-		secondStone := stoneStr[digits/2:]
-		// fmt.Println("creating 2 stones, first with:", firstStone, "second with:", secondStone)
-		fn, err := strconv.Atoi(firstStone)
-		assert.Nil(err, "strconv first")
-		sn, err := strconv.Atoi(secondStone)
-		assert.Nil(err, "strconv second")
-		s1 := fn
-		s2 := sn
-		// stoneCount += 2
-		blink(s1, calculationsLeft)
-		blink(s2, calculationsLeft)
-		// res = append(res, s1)
-		// res = append(res, s2)
-	} else {
-		// rule 3
-		// fmt.Println("rule 3 for stone:", stone)
-		stone *= 2024
-		// stoneCount++
-		blink(stone, calculationsLeft)
-		// res = append(res, stone)
-	}
-	// fmt.Println("after stonecount:", stoneCount)
-	// }
-	// return res
+	return newStones
 }
 
-func inputToStones(input string) []int {
-	res := []int{}
+func inputToStones(input string) map[int]int {
+	res := make(map[int]int)
 	split := strings.Split(input, " ")
+
 	for _, v := range split {
 		num, err := strconv.Atoi(v)
 		assert.Nil(err, "strconv fail")
-		res = append(res, num)
+		res[num] += 1
+		// res = append(res, num)
 	}
 	return res
 }
