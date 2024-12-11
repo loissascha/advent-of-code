@@ -6,6 +6,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/loissascha/go-assert/assert"
 )
@@ -19,11 +20,24 @@ func Day11() {
 	fmt.Println("Input:", input)
 	stones := inputToStones(input)
 	fmt.Println("stones:", stones)
-	for i := 0; i < 75; i++ {
-		stones = blink(stones)
+	newStones := []Stone{}
+	var wg sync.WaitGroup
+	for si, stone := range stones {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			stoneRes := []Stone{stone}
+			for i := 0; i < 75; i++ {
+				stoneRes = blink(stoneRes)
+				fmt.Println("stone", si, "run", i)
+			}
+			fmt.Println("finished with stone", si)
+			newStones = append(newStones, stoneRes...)
+		}()
 	}
-	fmt.Println("stones:", stones)
-	fmt.Println("stones count:", len(stones))
+	wg.Wait()
+	// fmt.Println("stones:", newStones)
+	fmt.Println("stones count:", len(newStones))
 }
 
 func blink(stones []Stone) []Stone {
@@ -33,15 +47,15 @@ func blink(stones []Stone) []Stone {
 		digits := len(stoneStr)
 		if stone.num == 0 {
 			// rule 1
-			fmt.Println("rule 1 for stone:", stone)
+			// fmt.Println("rule 1 for stone:", stone)
 			stone.num = 1
 			res = append(res, stone)
 		} else if digits%2 == 0 {
 			// rule 2
-			fmt.Println("rule 2 for stone:", stone)
+			// fmt.Println("rule 2 for stone:", stone)
 			firstStone := stoneStr[0 : digits/2]
 			secondStone := stoneStr[digits/2:]
-			fmt.Println("creating 2 stones, first with:", firstStone, "second with:", secondStone)
+			// fmt.Println("creating 2 stones, first with:", firstStone, "second with:", secondStone)
 			fn, err := strconv.Atoi(firstStone)
 			assert.Nil(err, "strconv first")
 			sn, err := strconv.Atoi(secondStone)
@@ -52,7 +66,7 @@ func blink(stones []Stone) []Stone {
 			res = append(res, s2)
 		} else {
 			// rule 3
-			fmt.Println("rule 3 for stone:", stone)
+			// fmt.Println("rule 3 for stone:", stone)
 			stone.num *= 2024
 			res = append(res, stone)
 		}
