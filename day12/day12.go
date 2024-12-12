@@ -54,7 +54,7 @@ func countFields(input [][]string) int {
 	for y := 0; y < len(input); y++ {
 		for x := 0; x < len(input[y]); x++ {
 			char := input[y][x]
-			if char != "+" && char != " " {
+			if char != "+" && char != " " && char != "|" && char != "-" {
 				fields++
 			}
 		}
@@ -83,6 +83,12 @@ func calculatePerimeterString(input [][]string) [][]string {
 				continue
 			}
 			if char == "+" {
+				continue
+			}
+			if char == "|" {
+				continue
+			}
+			if char == "-" {
 				continue
 			}
 			leftX := x - 2
@@ -132,21 +138,25 @@ func calculatePerimeterString(input [][]string) [][]string {
 			if writeLeft {
 				input[y-1][x-1] = "+"
 				input[y+1][x-1] = "+"
+				input[y][x-1] = "|"
 			}
 
 			if writeRight {
 				input[y-1][x+1] = "+"
 				input[y+1][x+1] = "+"
+				input[y][x+1] = "|"
 			}
 
 			if writeTop {
 				input[y-1][x+1] = "+"
 				input[y-1][x-1] = "+"
+				input[y-1][x] = "-"
 			}
 
 			if writeBottom {
 				input[y+1][x+1] = "+"
 				input[y+1][x-1] = "+"
+				input[y+1][x] = "-"
 			}
 		}
 	}
@@ -181,7 +191,7 @@ func printCombinedPlotLine(cpl CombinedPlotLine) [][]string {
 					if x != xx {
 						continue
 					}
-					resline = append(resline, pl.char+" ")
+					resline = append(resline, pl.char)
 					resline = append(resline, " ")
 					foundX = true
 				}
@@ -197,24 +207,6 @@ func printCombinedPlotLine(cpl CombinedPlotLine) [][]string {
 		res = append(res, emptyline)
 	}
 	return res
-}
-
-func addToPerimeterMap(perimeterMap map[uint]map[uint]int, x int, y int) map[uint]map[uint]int {
-	foundY := false
-	for yy := range perimeterMap {
-		if yy != uint(y) {
-			continue
-		}
-		foundY = true
-		perimeterMap[uint(y)][uint(x)] = 1
-	}
-
-	if !foundY {
-		// create
-		perimeterMap[uint(y)] = make(map[uint]int)
-		perimeterMap[uint(y)][uint(x)] = 1
-	}
-	return perimeterMap
 }
 
 func hasPos(cpl CombinedPlotLine, x int, y int) bool {
