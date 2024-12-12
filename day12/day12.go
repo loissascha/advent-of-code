@@ -43,9 +43,11 @@ func Day12() {
 	// fmt.Println(len(combinedPlotLines))
 }
 
-func printCombinedPlotLine(cpl CombinedPlotLine) {
-	for yy := 0; yy < maxY; yy++ {
-		for xx := 0; xx < maxX; xx++ {
+func printCombinedPlotLine(cpl CombinedPlotLine) [][]string {
+	res := [][]string{}
+	for yy := -1; yy < maxY; yy++ {
+		resline := []string{}
+		for xx := -1; xx < maxX; xx++ {
 			foundX := false
 			for _, pl := range cpl.rows {
 				y := pl.y
@@ -57,15 +59,19 @@ func printCombinedPlotLine(cpl CombinedPlotLine) {
 						continue
 					}
 					fmt.Print(pl.char)
+					resline = append(resline, pl.char)
 					foundX = true
 				}
 			}
 			if !foundX {
 				fmt.Print(" ")
+				resline = append(resline, " ")
 			}
 		}
 		fmt.Print("\n")
+		res = append(res, resline)
 	}
+	return res
 }
 
 // func calculatePerimeter(cpl CombinedPlotLine) int {
