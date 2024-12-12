@@ -39,10 +39,22 @@ func findPlots(input [][]string) []Plot {
 func findPlot(input [][]string, x int, y int) {
 	foundPositions := make(map[int][]int)
 	foundPositions[0] = []int{0}
-	foundPositions = findDir(input, x, y, 1, 0, foundPositions)
-	foundPositions = findDir(input, x, y, -1, 0, foundPositions)
-	foundPositions = findDir(input, x, y, 0, -1, foundPositions)
-	foundPositions = findDir(input, x, y, 0, 1, foundPositions)
+	foundPositions = findDir(input, x+1, y, 1, 0, foundPositions)
+	foundPositions = findDir(input, x+1, y, -1, 0, foundPositions)
+	foundPositions = findDir(input, x+1, y, 0, -1, foundPositions)
+	foundPositions = findDir(input, x+1, y, 0, 1, foundPositions)
+	foundPositions = findDir(input, x-1, y, 1, 0, foundPositions)
+	foundPositions = findDir(input, x-1, y, -1, 0, foundPositions)
+	foundPositions = findDir(input, x-1, y, 0, -1, foundPositions)
+	foundPositions = findDir(input, x-1, y, 0, 1, foundPositions)
+	foundPositions = findDir(input, x, y+1, 1, 0, foundPositions)
+	foundPositions = findDir(input, x, y+1, -1, 0, foundPositions)
+	foundPositions = findDir(input, x, y+1, 0, -1, foundPositions)
+	foundPositions = findDir(input, x, y+1, 0, 1, foundPositions)
+	foundPositions = findDir(input, x, y-1, 1, 0, foundPositions)
+	foundPositions = findDir(input, x, y-1, -1, 0, foundPositions)
+	foundPositions = findDir(input, x, y-1, 0, -1, foundPositions)
+	foundPositions = findDir(input, x, y-1, 0, 1, foundPositions)
 	fmt.Println("find plot result for x", x, "y", y)
 	fmt.Println(foundPositions)
 }
@@ -53,7 +65,9 @@ func hasFoundPosition(input map[int][]int, x int, y int) bool {
 			continue
 		}
 		for _, n := range v {
+			fmt.Println("n is", n, "looking for", x)
 			if n == x {
+				fmt.Println("return true")
 				return true
 			}
 		}
@@ -63,8 +77,11 @@ func hasFoundPosition(input map[int][]int, x int, y int) bool {
 
 func findDir(input [][]string, x int, y int, dirX int, dirY int, foundPositions map[int][]int) map[int][]int {
 	char := input[y][x]
+	fmt.Println("find dir for char", char, dirX, dirY)
 	if !hasFoundPosition(foundPositions, x, y) {
+		fmt.Println("has no found pos")
 		next := input[y+dirY][x+dirX]
+		fmt.Println("next is:", next)
 		if next == char && hasFoundPosition(foundPositions, x+dirX, y+dirY) {
 			fmt.Println("found pos: ", x, y)
 			ll := foundPositions[y]
