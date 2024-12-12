@@ -41,10 +41,14 @@ func Day12() {
 		per := printCombinedPlotLine(v)
 		perRaw := calculatePerimeterString(per)
 		perimeter := countPer(perRaw)
+		perimeter2 := calculateSurrounding(perRaw)
+		perimeter3 := countPerimeter3(perRaw)
 		fields := countFields(perRaw)
 		fmt.Println("perimeter:", perimeter)
+		fmt.Println("perimeter2:", perimeter2)
+		fmt.Println("perimeter3:", perimeter3)
 		fmt.Println("fields:", fields)
-		sum += (perimeter * fields)
+		sum += (perimeter2 * fields)
 	}
 	fmt.Println("Sum:", sum)
 }
@@ -73,6 +77,83 @@ func countPer(input [][]string) int {
 		}
 	}
 	return per
+}
+
+func countPerimeter3(input [][]string) int {
+	per := 0
+	for y := 0; y < len(input); y++ {
+		for x := 0; x < len(input[y]); x++ {
+			char := input[y][x]
+			if char == "-" {
+				touchingFields := 0
+				if y-1 >= 0 {
+					topChar := input[y-1][x]
+					if topChar != " " {
+						touchingFields++
+					}
+				}
+				if y+1 < len(input) {
+					bottomChar := input[y+1][x]
+					if bottomChar != " " {
+						touchingFields++
+					}
+				}
+				if touchingFields < 2 {
+					per++
+				}
+			} else if char == "|" {
+				touchingFields := 0
+				if x-1 >= 0 {
+					leftChar := input[y][x-1]
+					if leftChar != " " {
+						touchingFields++
+					}
+				}
+				fmt.Println("x + 1 =", x+1, "len:", len(input[y]))
+				if x+1 < len(input[y]) {
+					rightChar := input[y][x+1]
+					if rightChar != " " {
+						touchingFields++
+					}
+				}
+				if touchingFields < 2 {
+					per++
+				}
+			}
+		}
+	}
+	return per
+}
+
+func calculateSurrounding(input [][]string) int {
+	minY := len(input)
+	maxY := 0
+	minX := len(input[0])
+	maxX := 0
+	for y := 0; y < len(input); y++ {
+		for x := 0; x < len(input[y]); x++ {
+			char := input[y][x]
+			if char == "+" {
+				if x < minX {
+					minX = x
+				}
+				if x > maxX {
+					maxX = x
+				}
+				if y < minY {
+					minY = y
+				}
+				if y > maxY {
+					maxY = y
+				}
+
+			}
+		}
+	}
+	xDiff := maxX - minX
+	yDiff := maxY - minY
+	perimeter := (xDiff * 2) + (yDiff * 2)
+	return perimeter / 2
 }
 
 func calculatePerimeterString(input [][]string) [][]string {
