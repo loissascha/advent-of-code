@@ -31,22 +31,90 @@ func Day12() {
 	}
 	for _, v := range combinedPlotLines {
 		fmt.Println(v)
-		calculatePerimeter(v)
+		perimeter := calculatePerimeter(v)
+		fmt.Println("perimeter is:", perimeter)
 	}
 	fmt.Println(len(combinedPlotLines))
 }
 
-func calculatePerimeter(cpl CombinedPlotLine) {
+func calculatePerimeter(cpl CombinedPlotLine) int {
 	perimeter := 0
+	perimeterMap := make(map[uint]map[uint]int)
 	for _, pl := range cpl.rows {
 		y := pl.y
 		for _, x := range pl.fields {
+			hasRight := hasPos(cpl, x+1, y)
+			hasBottom := hasPos(cpl, x, y+1)
+			hasBottomRight := hasPos(cpl, x+1, y+1)
+			hasTop := hasPos(cpl, x, y-1)
+			hasTopRight := hasPos(cpl, x+1, y-1)
+			hasLeft := hasPos(cpl, x-1, y)
+			hasTopLeft := hasPos(cpl, x-1, y-1)
+			hasBottomLeft := hasPos(cpl, x-1, y+1)
+
 			// check if there exists an item on the right and the bottom and the bottom right
+			if !hasRight || !hasBottom || !hasBottomRight {
+				perimeterMap = addToPerimeterMap(perimeterMap, x+1, y+1)
+			}
+
 			// check if there exists an item on the right and the top and the top right
-			// check if there exists an item on the left and the top and the top right
+			if !hasRight || !hasTop || !hasTopRight {
+				perimeterMap = addToPerimeterMap(perimeterMap, x+1, y-1)
+			}
+
+			// check if there exists an item on the left and the top and the top left
+			if !hasLeft || !hasTop || !hasTopLeft {
+				perimeterMap = addToPerimeterMap(perimeterMap, x-1, y-1)
+			}
+
 			// check if there exists an item on the left and the bottom and the bottom left
+			if !hasLeft || !hasBottom || !hasBottomLeft {
+				perimeterMap = addToPerimeterMap(perimeterMap, x-1, y+1)
+			}
 		}
 	}
+
+	for _, pp := range perimeterMap {
+		fmt.Println(pp)
+		for _, p := range pp {
+			perimeter += p
+		}
+	}
+	return perimeter
+}
+
+func addToPerimeterMap(perimeterMap map[uint]map[uint]int, x int, y int) map[uint]map[uint]int {
+	foundY := false
+	for yy := range perimeterMap {
+		if yy != uint(y) {
+			continue
+		}
+		foundY = true
+		perimeterMap[uint(y)][uint(x)] = 1
+	}
+
+	if !foundY {
+		// create
+		perimeterMap[uint(y)] = make(map[uint]int)
+		perimeterMap[uint(y)][uint(x)] = 1
+	}
+	return perimeterMap
+}
+
+func hasPos(cpl CombinedPlotLine, x int, y int) bool {
+	for _, pl := range cpl.rows {
+		yy := pl.y
+		if yy != y {
+			continue
+		}
+		for _, xx := range pl.fields {
+			if xx == x {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func combinePlotLines(combinedPlotLines []CombinedPlotLine, plotLines []PlotLine) []CombinedPlotLine {
