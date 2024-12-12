@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/loissascha/go-assert/assert"
 )
@@ -84,7 +85,6 @@ func calculatePerimeterString(input [][]string) [][]string {
 			if char == "+" {
 				continue
 			}
-			fmt.Println("no skipo", char, "at pos", x, y)
 			leftX := x - 2
 			rightX := x + 2
 			topY := y - 2
@@ -130,25 +130,21 @@ func calculatePerimeterString(input [][]string) [][]string {
 			}
 
 			if writeLeft {
-				fmt.Println("+ 1", x, y)
 				input[y-1][x-1] = "+"
 				input[y+1][x-1] = "+"
 			}
 
 			if writeRight {
-				fmt.Println("+ 2", x, y)
 				input[y-1][x+1] = "+"
 				input[y+1][x+1] = "+"
 			}
 
 			if writeTop {
-				fmt.Println("+ 3", x, y)
 				input[y-1][x+1] = "+"
 				input[y-1][x-1] = "+"
 			}
 
 			if writeBottom {
-				fmt.Println("+ 4", x, y)
 				input[y+1][x+1] = "+"
 				input[y+1][x-1] = "+"
 			}
@@ -156,11 +152,14 @@ func calculatePerimeterString(input [][]string) [][]string {
 	}
 
 	for y := 0; y < len(input); y++ {
+		line := ""
 		for x := 0; x < len(input[y]); x++ {
 			char := input[y][x]
-			fmt.Print(char)
+			line += char
 		}
-		fmt.Print("\n")
+		if strings.TrimSpace(line) != "" {
+			fmt.Println(line)
+		}
 	}
 
 	return input
