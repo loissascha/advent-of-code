@@ -23,7 +23,7 @@ var maxX = 0
 var maxY = 0
 
 func Day12() {
-	m := readFile("day12.test")
+	m := readFile("day12.input")
 	maxY = len(m)
 	for _, v := range m {
 		maxX = len(v)
@@ -34,19 +34,143 @@ func Day12() {
 		plotLines := mapLine(line, y)
 		combinedPlotLines = combinePlotLines(combinedPlotLines, plotLines)
 	}
+	sum := 0
 	for _, v := range combinedPlotLines {
 		fmt.Println(v)
-		printCombinedPlotLine(v)
-		// perimeter := calculatePerimeter(v)
-		// fmt.Println("perimeter is:", perimeter)
+		per := printCombinedPlotLine(v)
+		perRaw := calculatePerimeterString(per)
+		perimeter := countPer(perRaw)
+		fields := countFields(perRaw)
+		fmt.Println("perimeter:", perimeter)
+		fmt.Println("fields:", fields)
+		sum += (perimeter * fields)
 	}
-	// fmt.Println(len(combinedPlotLines))
+	fmt.Println("Sum:", sum)
+}
+
+func countFields(input [][]string) int {
+	fields := 0
+	for y := 0; y < len(input); y++ {
+		for x := 0; x < len(input[y]); x++ {
+			char := input[y][x]
+			if char != "+" && char != " " {
+				fields++
+			}
+		}
+	}
+	return fields
+}
+
+func countPer(input [][]string) int {
+	per := 0
+	for y := 0; y < len(input); y++ {
+		for x := 0; x < len(input[y]); x++ {
+			char := input[y][x]
+			if char == "+" {
+				per++
+			}
+		}
+	}
+	return per
+}
+
+func calculatePerimeterString(input [][]string) [][]string {
+	for y := 0; y < len(input); y++ {
+		for x := 0; x < len(input[y]); x++ {
+			char := input[y][x]
+			if char == " " {
+				continue
+			}
+			if char == "+" {
+				continue
+			}
+			fmt.Println("no skipo", char, "at pos", x, y)
+			leftX := x - 2
+			rightX := x + 2
+			topY := y - 2
+			bottomY := y + 2
+			writeLeft := false
+			writeRight := false
+			writeTop := false
+			writeBottom := false
+			if leftX > 0 {
+				left := input[y][leftX]
+				if left == " " {
+					writeLeft = true
+				}
+			} else {
+				writeLeft = true
+			}
+
+			if rightX < len(input[y]) {
+				right := input[y][rightX]
+				if right == " " {
+					writeRight = true
+				}
+			} else {
+				writeRight = true
+			}
+
+			if topY > 0 {
+				top := input[topY][x]
+				if top == " " {
+					writeTop = true
+				}
+			} else {
+				writeTop = true
+			}
+
+			if bottomY < len(input) {
+				bottom := input[bottomY][x]
+				if bottom == " " {
+					writeBottom = true
+				}
+			} else {
+				writeBottom = true
+			}
+
+			if writeLeft {
+				fmt.Println("+ 1", x, y)
+				input[y-1][x-1] = "+"
+				input[y+1][x-1] = "+"
+			}
+
+			if writeRight {
+				fmt.Println("+ 2", x, y)
+				input[y-1][x+1] = "+"
+				input[y+1][x+1] = "+"
+			}
+
+			if writeTop {
+				fmt.Println("+ 3", x, y)
+				input[y-1][x+1] = "+"
+				input[y-1][x-1] = "+"
+			}
+
+			if writeBottom {
+				fmt.Println("+ 4", x, y)
+				input[y+1][x+1] = "+"
+				input[y+1][x-1] = "+"
+			}
+		}
+	}
+
+	for y := 0; y < len(input); y++ {
+		for x := 0; x < len(input[y]); x++ {
+			char := input[y][x]
+			fmt.Print(char)
+		}
+		fmt.Print("\n")
+	}
+
+	return input
 }
 
 func printCombinedPlotLine(cpl CombinedPlotLine) [][]string {
 	res := [][]string{}
 	for yy := -1; yy < maxY; yy++ {
 		resline := []string{}
+		emptyline := []string{}
 		for xx := -1; xx < maxX; xx++ {
 			foundX := false
 			for _, pl := range cpl.rows {
@@ -58,47 +182,23 @@ func printCombinedPlotLine(cpl CombinedPlotLine) [][]string {
 					if x != xx {
 						continue
 					}
-					fmt.Print(pl.char)
-					resline = append(resline, pl.char)
+					resline = append(resline, pl.char+" ")
+					resline = append(resline, " ")
 					foundX = true
 				}
 			}
 			if !foundX {
-				fmt.Print(" ")
+				resline = append(resline, " ")
 				resline = append(resline, " ")
 			}
+			emptyline = append(emptyline, " ")
+			emptyline = append(emptyline, " ")
 		}
-		fmt.Print("\n")
 		res = append(res, resline)
+		res = append(res, emptyline)
 	}
 	return res
 }
-
-// func calculatePerimeter(cpl CombinedPlotLine) int {
-// 	perimeter := 0
-//
-// 	// perimeterMap := make(map[uint]map[uint]int)
-// 	for _, pl := range cpl.rows {
-// 		y := pl.y
-// 		for _, x := range pl.fields {
-// 			hasRight := hasPos(cpl, x+1, y)
-// 			hasBottom := hasPos(cpl, x, y+1)
-// 			hasTop := hasPos(cpl, x, y-1)
-// 			hasLeft := hasPos(cpl, x-1, y)
-// 			hasTopLeft := hasPos(cpl, x-1, y-1)
-// 			hasTopRight := hasPos(cpl, x+1, y-1)
-// 			hasBottomLeft := hasPos(cpl, x-1, y+1)
-// 			hasBottomRight := hasPos(cpl, x+1, y+1)
-//
-// 			// top left
-// 			if !hasLeft || !hasTop || !hasTopLeft {
-//
-// 			}
-// 		}
-// 	}
-//
-// 	return perimeter
-// }
 
 func addToPerimeterMap(perimeterMap map[uint]map[uint]int, x int, y int) map[uint]map[uint]int {
 	foundY := false
