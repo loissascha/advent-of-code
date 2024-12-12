@@ -52,25 +52,30 @@ func calculatePerimeter(cpl CombinedPlotLine) int {
 			hasTopLeft := hasPos(cpl, x-1, y-1)
 			hasBottomLeft := hasPos(cpl, x-1, y+1)
 
-			// check if there exists an item on the right and the bottom and the bottom right
-			if !hasRight || !hasBottom || !hasBottomRight {
-				perimeterMap = addToPerimeterMap(perimeterMap, x+1, y+1)
+			// top left
+			if !hasLeft || !hasBottom || !hasBottomLeft {
+				if !hasTop {
+					perimeterMap = addToPerimeterMap(perimeterMap, x-1, y+1)
+				}
 			}
 
-			// check if there exists an item on the right and the top and the top right
+			// top right
 			if !hasRight || !hasTop || !hasTopRight {
-				perimeterMap = addToPerimeterMap(perimeterMap, x+1, y-1)
+				if !hasTop {
+					perimeterMap = addToPerimeterMap(perimeterMap, x+1, y-1)
+				}
 			}
 
-			// check if there exists an item on the left and the top and the top left
+			// bottom left
 			if !hasLeft || !hasTop || !hasTopLeft {
 				perimeterMap = addToPerimeterMap(perimeterMap, x-1, y-1)
 			}
 
-			// check if there exists an item on the left and the bottom and the bottom left
-			if !hasLeft || !hasBottom || !hasBottomLeft {
-				perimeterMap = addToPerimeterMap(perimeterMap, x-1, y+1)
+			// bottom right
+			if !hasRight || !hasBottom || !hasBottomRight {
+				perimeterMap = addToPerimeterMap(perimeterMap, x+1, y+1)
 			}
+
 		}
 	}
 
