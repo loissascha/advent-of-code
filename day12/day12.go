@@ -39,52 +39,74 @@ func Day12() {
 
 func calculatePerimeter(cpl CombinedPlotLine) int {
 	perimeter := 0
-	perimeterMap := make(map[uint]map[uint]int)
+	emptyFieldsCount := 0
+	emptyFields := make(map[uint]map[uint]int)
+
 	for _, pl := range cpl.rows {
 		y := pl.y
+		emptyFields[uint(y)] = make(map[uint]int)
+		emptyFields[uint(y)-1] = make(map[uint]int)
+		emptyFields[uint(y)+1] = make(map[uint]int)
+	}
+
+	// perimeterMap := make(map[uint]map[uint]int)
+	for _, pl := range cpl.rows {
+		y := pl.y
+		emptyFields[uint(y)] = make(map[uint]int)
 		for _, x := range pl.fields {
 			hasRight := hasPos(cpl, x+1, y)
 			hasBottom := hasPos(cpl, x, y+1)
-			hasBottomRight := hasPos(cpl, x+1, y+1)
 			hasTop := hasPos(cpl, x, y-1)
-			hasTopRight := hasPos(cpl, x+1, y-1)
 			hasLeft := hasPos(cpl, x-1, y)
 			hasTopLeft := hasPos(cpl, x-1, y-1)
+			hasTopRight := hasPos(cpl, x+1, y-1)
 			hasBottomLeft := hasPos(cpl, x-1, y+1)
+			hasBottomRight := hasPos(cpl, x+1, y+1)
 
-			// top left
-			if !hasLeft || !hasBottom || !hasBottomLeft {
-				if !hasTop {
-					perimeterMap = addToPerimeterMap(perimeterMap, x-1, y+1)
-				}
+			if !hasRight {
+				emptyFields[uint(y)][uint(x)+1] = 1
 			}
 
-			// top right
-			if !hasRight || !hasTop || !hasTopRight {
-				if !hasTop {
-					perimeterMap = addToPerimeterMap(perimeterMap, x+1, y-1)
-				}
+			if !hasLeft {
+				emptyFields[uint(y)][uint(x)-1] = 1
 			}
 
-			// bottom left
-			if !hasLeft || !hasTop || !hasTopLeft {
-				perimeterMap = addToPerimeterMap(perimeterMap, x-1, y-1)
+			if !hasTop {
+				emptyFields[uint(y)-1][uint(x)] = 1
 			}
 
-			// bottom right
-			if !hasRight || !hasBottom || !hasBottomRight {
-				perimeterMap = addToPerimeterMap(perimeterMap, x+1, y+1)
+			if !hasBottom {
+				emptyFields[uint(y)+1][uint(x)] = 1
+			}
+
+			if !hasTopLeft && (!hasTop || !hasLeft) {
+				emptyFields[uint(y)-1][uint(x)-1] = 1
+			}
+
+			if !hasTopRight && (!hasTop || !hasRight) {
+				emptyFields[uint(y)-1][uint(x)+1] = 1
+			}
+
+			if !hasBottomLeft && (!hasBottom || !hasLeft) {
+				emptyFields[uint(y)+1][uint(x)-1] = 1
+			}
+
+			if !hasBottomRight && (!hasBottom || !hasRight) {
+				emptyFields[uint(y)+1][uint(x)+1] = 1
 			}
 
 		}
 	}
 
-	for _, pp := range perimeterMap {
+	for _, pp := range emptyFields {
 		fmt.Println(pp)
 		for _, p := range pp {
-			perimeter += p
+			emptyFieldsCount += p
 		}
 	}
+	fmt.Println("empty fields count:", emptyFieldsCount)
+	perimeter = emptyFieldsCount / 2
+	fmt.Println("perimeter:", perimeter)
 	return perimeter
 }
 
