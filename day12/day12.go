@@ -19,9 +19,14 @@ type CombinedPlotLine struct {
 	rows []PlotLine
 }
 
+var maxX = 0
+var maxY = 0
+
 func Day12() {
 	m := readFile("day12.test")
+	maxY = len(m)
 	for _, v := range m {
+		maxX = len(v)
 		fmt.Println(v)
 	}
 	combinedPlotLines := []CombinedPlotLine{}
@@ -31,84 +36,63 @@ func Day12() {
 	}
 	for _, v := range combinedPlotLines {
 		fmt.Println(v)
-		perimeter := calculatePerimeter(v)
-		fmt.Println("perimeter is:", perimeter)
+		printCombinedPlotLine(v)
+		// perimeter := calculatePerimeter(v)
+		// fmt.Println("perimeter is:", perimeter)
 	}
-	fmt.Println(len(combinedPlotLines))
+	// fmt.Println(len(combinedPlotLines))
 }
 
-func calculatePerimeter(cpl CombinedPlotLine) int {
-	perimeter := 0
-	emptyFieldsCount := 0
-	emptyFields := make(map[uint]map[uint]int)
-
-	for _, pl := range cpl.rows {
-		y := pl.y
-		emptyFields[uint(y)] = make(map[uint]int)
-		emptyFields[uint(y)-1] = make(map[uint]int)
-		emptyFields[uint(y)+1] = make(map[uint]int)
-	}
-
-	// perimeterMap := make(map[uint]map[uint]int)
-	for _, pl := range cpl.rows {
-		y := pl.y
-		emptyFields[uint(y)] = make(map[uint]int)
-		for _, x := range pl.fields {
-			hasRight := hasPos(cpl, x+1, y)
-			hasBottom := hasPos(cpl, x, y+1)
-			hasTop := hasPos(cpl, x, y-1)
-			hasLeft := hasPos(cpl, x-1, y)
-			hasTopLeft := hasPos(cpl, x-1, y-1)
-			hasTopRight := hasPos(cpl, x+1, y-1)
-			hasBottomLeft := hasPos(cpl, x-1, y+1)
-			hasBottomRight := hasPos(cpl, x+1, y+1)
-
-			if !hasRight {
-				emptyFields[uint(y)][uint(x)+1] = 1
+func printCombinedPlotLine(cpl CombinedPlotLine) {
+	for yy := 0; yy < maxY; yy++ {
+		for xx := 0; xx < maxX; xx++ {
+			foundX := false
+			for _, pl := range cpl.rows {
+				y := pl.y
+				if y != yy {
+					continue
+				}
+				for _, x := range pl.fields {
+					if x != xx {
+						continue
+					}
+					fmt.Print(pl.char)
+					foundX = true
+				}
 			}
-
-			if !hasLeft {
-				emptyFields[uint(y)][uint(x)-1] = 1
+			if !foundX {
+				fmt.Print(" ")
 			}
-
-			if !hasTop {
-				emptyFields[uint(y)-1][uint(x)] = 1
-			}
-
-			if !hasBottom {
-				emptyFields[uint(y)+1][uint(x)] = 1
-			}
-
-			if !hasTopLeft && (!hasTop || !hasLeft) {
-				emptyFields[uint(y)-1][uint(x)-1] = 1
-			}
-
-			if !hasTopRight && (!hasTop || !hasRight) {
-				emptyFields[uint(y)-1][uint(x)+1] = 1
-			}
-
-			if !hasBottomLeft && (!hasBottom || !hasLeft) {
-				emptyFields[uint(y)+1][uint(x)-1] = 1
-			}
-
-			if !hasBottomRight && (!hasBottom || !hasRight) {
-				emptyFields[uint(y)+1][uint(x)+1] = 1
-			}
-
 		}
+		fmt.Print("\n")
 	}
-
-	for _, pp := range emptyFields {
-		fmt.Println(pp)
-		for _, p := range pp {
-			emptyFieldsCount += p
-		}
-	}
-	fmt.Println("empty fields count:", emptyFieldsCount)
-	perimeter = emptyFieldsCount / 2
-	fmt.Println("perimeter:", perimeter)
-	return perimeter
 }
+
+// func calculatePerimeter(cpl CombinedPlotLine) int {
+// 	perimeter := 0
+//
+// 	// perimeterMap := make(map[uint]map[uint]int)
+// 	for _, pl := range cpl.rows {
+// 		y := pl.y
+// 		for _, x := range pl.fields {
+// 			hasRight := hasPos(cpl, x+1, y)
+// 			hasBottom := hasPos(cpl, x, y+1)
+// 			hasTop := hasPos(cpl, x, y-1)
+// 			hasLeft := hasPos(cpl, x-1, y)
+// 			hasTopLeft := hasPos(cpl, x-1, y-1)
+// 			hasTopRight := hasPos(cpl, x+1, y-1)
+// 			hasBottomLeft := hasPos(cpl, x-1, y+1)
+// 			hasBottomRight := hasPos(cpl, x+1, y+1)
+//
+// 			// top left
+// 			if !hasLeft || !hasTop || !hasTopLeft {
+//
+// 			}
+// 		}
+// 	}
+//
+// 	return perimeter
+// }
 
 func addToPerimeterMap(perimeterMap map[uint]map[uint]int, x int, y int) map[uint]map[uint]int {
 	foundY := false
