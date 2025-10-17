@@ -4,8 +4,32 @@ fn main() {
     let file_path = "input_test.txt";
     let parts = get_lines(file_path);
     for part in parts {
-        println!("{}", part);
+        let numbers = get_numbers(&part);
+        println!("{} {}", part, numbers);
     }
+}
+
+fn get_numbers(line: &str) -> String {
+    let chars = line.chars();
+    let mut result = String::from("");
+    for char in chars {
+        if char >= '0' && char <= '9' {
+            result.push(char);
+        }
+    }
+    let length = result.chars().count();
+    if length == 1 {
+        result.push_str(&result.clone());
+    }
+    if length > 2 {
+        let chars: Vec<char> = result.chars().collect();
+        let first = chars[0];
+        let last = chars[chars.iter().count() - 1];
+        result = String::from("");
+        result.push(first);
+        result.push(last);
+    }
+    result
 }
 
 fn get_lines(file_path: &str) -> Vec<String> {
