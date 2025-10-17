@@ -34,61 +34,73 @@ func main() {
 	fmt.Println("Sum:", sum)
 }
 
-func replaceHighestNumber(line string) string {
-	foundHigh := false
-	highestIdx := -1
-	highestKey := ""
-	highestValue := ""
+func findTextNumber(line string) string {
+	found := false
+	foundIdx := len(line) + 1
+	foundValue := ""
 	for k, v := range letterMap {
 		idx := strings.Index(line, k)
-		if idx > -1 && idx > highestIdx {
-			foundHigh = true
-			highestIdx = idx
-			highestKey = k
-			highestValue = v
+		if idx > -1 && idx < foundIdx {
+			foundIdx = idx
+			foundValue = v
+			found = true
 		}
 	}
-	if foundHigh {
-		line = line[:highestIdx] + highestValue + line[highestIdx+len(highestKey):]
+	if found {
+		return foundValue
 	}
-	return line
-}
-
-func replaceLowestNumber(line string) string {
-	foundLow := false
-	lowestIdx := len(line) + 1
-	lowestKey := ""
-	lowestValue := ""
-	for k, v := range letterMap {
-		idx := strings.Index(line, k)
-		if idx > -1 && idx < lowestIdx {
-			lowestIdx = idx
-			lowestKey = k
-			lowestValue = v
-			foundLow = true
-		}
-	}
-	if foundLow {
-		line = strings.Replace(line, lowestKey, lowestValue, 1)
-	}
-	return line
+	return ""
 }
 
 func getLineValue(line []byte) int {
-	// fmt.Println(string(line))
 	resStr := ""
 
-	lineStr := string(line)
-	fmt.Println("line:", lineStr)
-	lineStr = replaceLowestNumber(lineStr)
-	lineStr = replaceHighestNumber(lineStr)
-	fmt.Println("update line:", lineStr)
-	line = []byte(lineStr)
+	firstNum := ""
+	secondNum := ""
 
-	for _, ch := range line {
-		if ch >= byte('0') && ch <= byte('9') {
-			resStr += string(ch)
+	// find first number
+	for i, ch := range line {
+		lineStr := string(line)
+		shortStr := lineStr[:i]
+		strNum := findTextNumber(shortStr)
+		if strNum != "" {
+			firstNum = strNum
+			break
 		}
+		if ch >= byte('0') && ch <= byte('9') {
+			firstNum = string(ch)
+			break
+		}
+	}
+
+	// find last number
+	for i, _ := range line {
+		idx := len(line) - i - 1
+		ch := line[idx]
+		lineStr := string(line)
+		shortStr := lineStr[idx:]
+		strNum := findTextNumber(shortStr)
+		if strNum != "" {
+			secondNum = strNum
+			break
+		}
+		if ch >= byte('0') && ch <= byte('9') {
+			secondNum = string(ch)
+			break
+		}
+	}
+
+	resStr = firstNum + secondNum
+
+	// old way
+	// for _, ch := range line {
+	// 	if ch >= byte('0') && ch <= byte('9') {
+	// 		resStr += string(ch)
+	// 	}
+	// }
+
+	if len(resStr) == 0 {
+		return 0
 	}
 
 	if len(resStr) == 1 {
@@ -98,8 +110,6 @@ func getLineValue(line []byte) int {
 	if len(resStr) > 2 {
 		resStr = resStr[:1] + resStr[len(resStr)-1:]
 	}
-
-	// fmt.Println("resStr", resStr)
 
 	res, err := strconv.Atoi(resStr)
 	if err != nil {
