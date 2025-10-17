@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let file_path = "input_test2.txt";
+    let file_path = "input.txt";
     let parts = get_lines(file_path);
     let mut sum = 0;
     for part in parts {
@@ -46,12 +46,11 @@ fn get_str_number(input: &str) -> i32 {
 
 fn get_numbers(line: &str) -> i32 {
     println!("Get numbers for {line}");
-    let chars = line.chars();
     let mut result = String::from("");
 
     // find first number
     let mut i = 0;
-    for char in chars {
+    for char in line.chars() {
         // if the text up until this point might form a 'text' number (one, two, three, ...)
         let sub: String = line.chars().take(i).collect();
         let strnum = get_str_number(&sub);
@@ -70,13 +69,12 @@ fn get_numbers(line: &str) -> i32 {
     }
 
     // find last number
-    let chars = line.chars();
     let mut i = 0;
     let length = line.chars().count();
-    for char in chars {
+    for char in line.chars().rev() {
         let idx = length - i - 1;
         let sub: String = line.chars().skip(idx).collect();
-        println!("find last num sub: {sub}");
+        println!("find last num sub: {sub} current char: {char}");
         let strnum = get_str_number(&sub);
         if strnum > 0 {
             result.push_str(&strnum.to_string());
