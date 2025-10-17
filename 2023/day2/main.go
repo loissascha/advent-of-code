@@ -16,6 +16,7 @@ func main() {
 	possibleGames := []game.Game{}
 
 	sum := 0
+	sum2 := 0
 
 	checkFor := map[string]int{}
 	checkFor["red"] = 12
@@ -29,7 +30,11 @@ func main() {
 			fmt.Println(g)
 			sum += g.Number
 		}
+		setPower := g.GetPowerOfMinSets()
+		fmt.Println("set", g.Number, "power:", setPower)
+		sum2 += setPower
 	}
 
 	fmt.Println("sum:", sum)
+	fmt.Println("sum2:", sum2)
 }

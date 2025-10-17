@@ -11,6 +11,36 @@ type Game struct {
 	Sets   []Set
 }
 
+func (g *Game) GetPowerOfMinSets() int {
+	bag := g.GetMinNecessaryBagToPlayAllSets()
+	sum := 0
+	for _, v := range bag {
+		if sum == 0 {
+			sum = v
+			continue
+		}
+		sum *= v
+	}
+	return sum
+}
+
+func (g *Game) GetMinNecessaryBagToPlayAllSets() map[string]int {
+	bag := map[string]int{}
+	for _, set := range g.Sets {
+		for k, v := range set.Content {
+			b, ok := bag[k]
+			if !ok {
+				bag[k] = v
+				continue
+			}
+			if v > b {
+				bag[k] = v
+			}
+		}
+	}
+	return bag
+}
+
 func (g *Game) PossibleWithInput(input map[string]int) bool {
 	for _, set := range g.Sets {
 		bag := maps.Clone(input)
