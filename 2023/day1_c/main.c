@@ -4,7 +4,7 @@
 
 StringArray read_file(char filename[]) {
   FILE *fptr;
-  fptr = fopen("test_input.txt", "r");
+  fptr = fopen(filename, "r");
 
   StringArray arr = init_string_array(4);
 
@@ -14,7 +14,7 @@ StringArray read_file(char filename[]) {
     append_string(&arr, buffer);
   }
 
-  fclose(fptr);
+  // fclose(fptr);
   return arr;
 }
 
@@ -26,6 +26,6 @@ int main(int argc, char *argv[]) {
     printf("Line %d: %s\n", i, lines.data[i]);
   }
 
-  // free_string_array(&lines);
+  free_string_array(&lines);
   return 0;
 }
