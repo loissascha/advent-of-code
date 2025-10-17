@@ -5,9 +5,15 @@ import (
 	"fmt"
 )
 
+type Row struct {
+	Index      int
+	Row        string
+	RowNumbers []RowNumber
+}
+
 type RowNumber struct {
 	Number   string
-	StartPow int
+	StartPos int
 }
 
 func getRowNumbers(input string) []RowNumber {
@@ -31,7 +37,7 @@ func getRowNumbers(input string) []RowNumber {
 		if parsingNumberStart != -1 {
 			rn := RowNumber{
 				Number:   parsingNumber,
-				StartPow: parsingNumberStart,
+				StartPos: parsingNumberStart,
 			}
 			result = append(result, rn)
 			parsingNumberStart = -1
@@ -42,7 +48,7 @@ func getRowNumbers(input string) []RowNumber {
 	if parsingNumberStart != -1 {
 		rn := RowNumber{
 			Number:   parsingNumber,
-			StartPow: parsingNumberStart,
+			StartPos: parsingNumberStart,
 		}
 		result = append(result, rn)
 		parsingNumberStart = -1
@@ -58,17 +64,23 @@ func main() {
 		panic(err)
 	}
 
-	rows := []string{}
+	rows := []Row{}
+	l := []string{}
 
 	for line := range lines {
-		rows = append(rows, line)
+		l = append(l, line)
+	}
+
+	for n, row := range l {
+		rows = append(rows, Row{
+			Index:      n,
+			Row:        row,
+			RowNumbers: getRowNumbers(row),
+		})
 	}
 
 	for _, row := range rows {
-		rowNumbers := getRowNumbers(row)
-		fmt.Println(row)
-		fmt.Println(rowNumbers)
+		fmt.Println(row.Row)
 	}
 
-	// fmt.Println(rows)
 }
