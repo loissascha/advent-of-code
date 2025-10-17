@@ -15,19 +15,36 @@ pub fn main() !void {
     }
 
     for (lines.items) |line| {
-        print("Line: {s}\n", .{line});
+        try getLineNums(line);
     }
 }
 
-fn readFile(alloc: std.mem.Allocator, path: []const u8) ![]const u8 {
+fn getLineNums(line: []u8) !void {
+    print("Line: {s}\n", .{line});
+
+    // var lineLength = std.mem.len(line);
+
+    var i: usize = 0;
+    for (line) |chunk| {
+        if (chunk >= '1') {
+            if (chunk <= '9') {
+                print("Chunk: {s}", .{line[i]});
+            }
+        }
+        i += 1;
+    }
+    print("\n", .{});
+}
+
+fn readFile(alloc: std.mem.Allocator, path: []const u8) ![]u8 {
     const cwd = std.fs.cwd();
     return cwd.readFileAlloc(alloc, path, 4096);
 }
 
-fn getFileLines(alloc: std.mem.Allocator, path: []const u8) !std.ArrayList([]const u8) {
+fn getFileLines(alloc: std.mem.Allocator, path: []const u8) !std.ArrayList([]u8) {
     const fileContents = try readFile(alloc, path);
     defer alloc.free(fileContents);
-    var lines = try std.ArrayList([]const u8).initCapacity(alloc, 16);
+    var lines = try std.ArrayList([]u8).initCapacity(alloc, 16);
 
     var splits = std.mem.splitAny(u8, fileContents, "\n");
     while (splits.next()) |chunk| {
