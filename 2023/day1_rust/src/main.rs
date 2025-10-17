@@ -1,7 +1,7 @@
 use std::fs;
 
 fn main() {
-    let file_path = "input_test.txt";
+    let file_path = "input_test2.txt";
     let parts = get_lines(file_path);
     let mut sum = 0;
     for part in parts {
@@ -21,6 +21,9 @@ fn get_numbers(line: &str) -> i32 {
         }
     }
     let length = result.chars().count();
+    if length == 0 {
+        return 0;
+    }
     if length == 1 {
         result.push_str(&result.clone());
     }
