@@ -1,9 +1,8 @@
 package main
 
 import (
-	"bytes"
+	"day1/readfile"
 	"fmt"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -22,7 +21,7 @@ var letterMap = map[string]string{
 
 func main() {
 	inputFile := "input.txt"
-	lines, err := readLines(inputFile)
+	lines, err := readfile.ReadLines(inputFile)
 	if err != nil {
 		panic(err)
 	}
@@ -107,43 +106,4 @@ func getLineValue(line []byte) int {
 		panic(err)
 	}
 	return res
-}
-
-func readLines(inputFile string) (chan string, error) {
-	out := make(chan string, 1)
-	file, err := os.Open(inputFile)
-	if err != nil {
-		return out, err
-	}
-
-	go func() {
-		defer file.Close()
-
-		line := ""
-		for {
-			var data = make([]byte, 1)
-			read, err := file.Read(data)
-			if err != nil {
-				break
-			}
-			chunk := data[:read]
-			split := bytes.SplitN(chunk, []byte("\n"), 2)
-			if len(split) == 2 {
-				line += string(split[0])
-				out <- line
-				line = ""
-				line += string(split[1])
-				continue
-			}
-			line += string(chunk)
-		}
-
-		if line != "" {
-			out <- line
-		}
-		close(out)
-	}()
-
-	return out, nil
-
 }
