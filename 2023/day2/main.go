@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	filename := "test_input.txt"
+	filename := "input.txt"
 	lines, err := readfile.ReadLines(filename)
 	if err != nil {
 		panic(err)
