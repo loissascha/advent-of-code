@@ -3,13 +3,16 @@ use std::fs;
 fn main() {
     let file_path = "input_test.txt";
     let parts = get_lines(file_path);
+    let mut sum = 0;
     for part in parts {
         let numbers = get_numbers(&part);
+        sum += numbers;
         println!("{} {}", part, numbers);
     }
+    println!("Sum: {}", sum);
 }
 
-fn get_numbers(line: &str) -> String {
+fn get_numbers(line: &str) -> i32 {
     let chars = line.chars();
     let mut result = String::from("");
     for char in chars {
@@ -29,7 +32,7 @@ fn get_numbers(line: &str) -> String {
         result.push(first);
         result.push(last);
     }
-    result
+    result.parse().unwrap()
 }
 
 fn get_lines(file_path: &str) -> Vec<String> {
