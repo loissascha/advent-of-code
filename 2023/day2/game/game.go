@@ -1,6 +1,7 @@
 package game
 
 import (
+	"maps"
 	"strconv"
 	"strings"
 )
@@ -8,6 +9,23 @@ import (
 type Game struct {
 	Number int
 	Sets   []Set
+}
+
+func (g *Game) PossibleWithInput(input map[string]int) bool {
+	for _, set := range g.Sets {
+		bag := maps.Clone(input)
+		for k, v := range set.Content {
+			b, ok := bag[k]
+			if !ok {
+				return false
+			}
+			if b < v {
+				return false
+			}
+			bag[k] = bag[k] - v
+		}
+	}
+	return true
 }
 
 type Set struct {
