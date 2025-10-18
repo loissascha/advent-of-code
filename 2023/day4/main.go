@@ -76,7 +76,7 @@ func newCardFromLine(line string) *Card {
 }
 
 func main() {
-	lines, err := readfile.ReadLines("test_input.txt")
+	lines, err := readfile.ReadLines("input.txt")
 	if err != nil {
 		panic(err)
 	}
