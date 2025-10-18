@@ -12,6 +12,7 @@ type Card struct {
 	Id             int
 	WinningNumbers []int
 	TipNumbers     []int
+	Instances      int
 }
 
 func (c *Card) getPoints() int {
@@ -28,6 +29,17 @@ func (c *Card) getPoints() int {
 	return points
 }
 
+func (c *Card) getMatches() int {
+	matches := 0
+	for _, tipNum := range c.TipNumbers {
+		if slices.Contains(c.WinningNumbers, tipNum) {
+			matches += 1
+		}
+	}
+	return matches
+
+}
+
 func newCardFromLine(line string) *Card {
 	splitLine := strings.SplitN(line, ":", 2)
 
@@ -42,6 +54,7 @@ func newCardFromLine(line string) *Card {
 		Id:             cardNum,
 		WinningNumbers: []int{},
 		TipNumbers:     []int{},
+		Instances:      1,
 	}
 
 	numsSplit := strings.Split(splitLine[1], "|")
@@ -82,12 +95,39 @@ func main() {
 	}
 
 	sum := 0
+	cards := []*Card{}
 	for line := range lines {
 		card := newCardFromLine(line)
+		cards = append(cards, card)
 		cardPoints := card.getPoints()
 		sum += cardPoints
-		fmt.Println(card, "worth points:", cardPoints)
+		// fmt.Println(card, "worth points:", cardPoints)
 	}
 
-	fmt.Println("sum:", sum)
+	// fmt.Println("sum:", sum)
+
+	// part 2
+	for n, card := range cards {
+		cardMatches := card.getMatches()
+		fmt.Println("card matches:", cardMatches)
+		for i := range cardMatches {
+			instancePlusCard := cards[n+i+1]
+			if instancePlusCard == nil {
+				fmt.Println("nil card")
+			} else {
+				fmt.Println("instancepluscard:", instancePlusCard)
+				instancePlusCard.Instances += card.Instances
+			}
+			// fmt.Println(instancePlusCard)
+		}
+
+	}
+
+	cardCount := 0
+	for _, card := range cards {
+		fmt.Println(card)
+		cardCount += card.Instances
+	}
+
+	fmt.Println("card count:", cardCount)
 }
