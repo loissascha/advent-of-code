@@ -11,7 +11,7 @@ fn main() {
             continue;
         }
         let present = process_line(&sp);
-        total_feet += present.get_square_feet();
+        total_feet += present.get_paper_square_feet();
         ribbon_feet += present.get_ribbon_sqft();
     }
 
@@ -52,7 +52,7 @@ impl Present {
         }
         smallest
     }
-    fn get_square_feet(&self) -> i32 {
+    fn get_paper_square_feet(&self) -> i32 {
         2 * self.l * self.w + 2 * self.w * self.h + 2 * self.h * self.l + self.get_smallest_side()
     }
 }
