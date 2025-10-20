@@ -8,6 +8,10 @@ fn main() {
         if sp == String::from("") {
             continue;
         }
-        println!("line: {}", sp);
+        process_line(&sp);
     }
+}
+
+fn process_line(input: &String) {
+    println!("Process line: {}", input)
 }
