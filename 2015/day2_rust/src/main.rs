@@ -5,14 +5,18 @@ fn main() {
     let split: Vec<String> = input.split("\n").map(|s| s.to_string()).collect();
 
     let mut total_feet = 0;
+    let mut ribbon_feet = 0;
     for sp in split {
         if sp == String::from("") {
             continue;
         }
-        total_feet += process_line(&sp);
+        let present = process_line(&sp);
+        total_feet += present.get_square_feet();
+        ribbon_feet += present.get_ribbon_sqft();
     }
 
     println!("Total feet: {}", total_feet);
+    println!("Total ribbon: {}", ribbon_feet);
 
     // let test_line = String::from("2x3x4");
     // let sqf = process_line(&test_line);
@@ -26,6 +30,15 @@ struct Present {
 }
 
 impl Present {
+    fn get_ribbon_sqft(&self) -> i32 {
+        let cubic = self.get_cubic_volume();
+        let mut nums = [self.l, self.w, self.h];
+        nums.sort();
+        nums[0] + nums[0] + nums[1] + nums[1] + cubic
+    }
+    fn get_cubic_volume(&self) -> i32 {
+        self.l * self.w * self.h
+    }
     fn get_smallest_side(&self) -> i32 {
         let s1 = self.l * self.w;
         let s2 = self.w * self.h;
@@ -44,7 +57,7 @@ impl Present {
     }
 }
 
-fn process_line(input: &String) -> i32 {
+fn process_line(input: &String) -> Present {
     println!("Process line: {}", input);
     let parts: Vec<&str> = input.split("x").collect();
 
@@ -53,5 +66,5 @@ fn process_line(input: &String) -> i32 {
         w: parts[1].parse::<i32>().unwrap(),
         h: parts[2].parse::<i32>().unwrap(),
     };
-    present.get_square_feet()
+    present
 }
