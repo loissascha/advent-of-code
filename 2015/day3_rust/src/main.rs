@@ -26,41 +26,79 @@ fn houses_delivered(input: String) -> usize {
 
     let mut current_pos_x: i32 = 0;
     let mut current_pos_y: i32 = 0;
+    let mut current_robo_pos_x: i32 = 0;
+    let mut current_robo_pos_y: i32 = 0;
     houses.push(House {
         pos_x: 0,
         pos_y: 0,
-        presents: 1,
+        presents: 2,
     });
+
+    let mut santa_turn = true;
 
     let chars: Vec<char> = input.chars().collect();
     for char in chars {
-        if char == '>' {
-            current_pos_x += 1;
-        }
-        if char == '<' {
-            current_pos_x -= 1;
-        }
-        if char == '^' {
-            current_pos_y += 1;
-        }
-        if char == 'v' {
-            current_pos_y -= 1;
-        }
-        let mut found = false;
-        for h in houses.iter_mut() {
-            if h.pos_x == current_pos_x && h.pos_y == current_pos_y {
-                found = true;
-                h.presents += 1;
+        if santa_turn {
+            if char == '>' {
+                current_pos_x += 1;
+            }
+            if char == '<' {
+                current_pos_x -= 1;
+            }
+            if char == '^' {
+                current_pos_y += 1;
+            }
+            if char == 'v' {
+                current_pos_y -= 1;
+            }
+
+            // normal santa
+            let mut found = false;
+            for h in houses.iter_mut() {
+                if h.pos_x == current_pos_x && h.pos_y == current_pos_y {
+                    found = true;
+                    h.presents += 1;
+                }
+            }
+            if !found {
+                let house = House {
+                    pos_x: current_pos_x,
+                    pos_y: current_pos_y,
+                    presents: 1,
+                };
+                houses.push(house);
+            }
+        } else {
+            if char == '>' {
+                current_robo_pos_x += 1;
+            }
+            if char == '<' {
+                current_robo_pos_x -= 1;
+            }
+            if char == '^' {
+                current_robo_pos_y += 1;
+            }
+            if char == 'v' {
+                current_robo_pos_y -= 1;
+            }
+            // robo santa
+            let mut found = false;
+            for h in houses.iter_mut() {
+                if h.pos_x == current_robo_pos_x && h.pos_y == current_robo_pos_y {
+                    found = true;
+                    h.presents += 1;
+                }
+            }
+            if !found {
+                let house = House {
+                    pos_x: current_robo_pos_x,
+                    pos_y: current_robo_pos_y,
+                    presents: 1,
+                };
+                houses.push(house);
             }
         }
-        if !found {
-            let house = House {
-                pos_x: current_pos_x,
-                pos_y: current_pos_y,
-                presents: 1,
-            };
-            houses.push(house);
-        }
+        santa_turn = !santa_turn;
     }
 
     houses.len()
