@@ -11,6 +11,11 @@ struct Grid {
     items: [[Light; GRID_SIZE]; GRID_SIZE],
 }
 
+struct Coords {
+    x: usize,
+    y: usize,
+}
+
 impl Grid {
     fn print_lit(&self) {
         let mut lit: u32 = 0;
@@ -69,11 +74,6 @@ impl Grid {
     }
 }
 
-struct Coords {
-    x: usize,
-    y: usize,
-}
-
 fn split_through_str(input: String) -> (Coords, Coords) {
     let parts = input
         .split_once(" through ")
@@ -108,8 +108,6 @@ fn main() {
         println!("line: {}", line);
         grid.process_line(line);
     }
-
-    // grid.turn_on(0, 0, 999, 999);
 
     grid.print_lit();
 }
