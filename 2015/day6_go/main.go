@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
 
 const GRID_SIZE int = 1000
 
@@ -13,6 +18,11 @@ type Grid struct {
 }
 
 func main() {
+	contents, err := os.ReadFile("input.txt")
+	if err != nil {
+		panic(err)
+	}
+	split := strings.Split(string(contents), "\n")
 
 	grid := Grid{
 		items: [GRID_SIZE][GRID_SIZE]Light{},
@@ -24,13 +34,49 @@ func main() {
 		}
 	}
 
-	fmt.Println(grid)
-
-	grid.turnOn(0, 0, 999, 999)
-	// grid.toggle(0, 0, 999, 0)
-	grid.turnOff(499, 499, 500, 500)
+	for _, line := range split {
+		grid.processLine(line)
+	}
 
 	grid.printLit()
+}
+
+func (g *Grid) processLine(line string) {
+	if strings.Contains(line, "turn on") {
+		line = strings.TrimLeft(line, "turn on ")
+		startX, startY, stopX, stopY := getCoords(line)
+		g.turnOn(startX, startY, stopX, stopY)
+	} else if strings.Contains(line, "turn off") {
+		line = strings.TrimLeft(line, "turn off ")
+		startX, startY, stopX, stopY := getCoords(line)
+		g.turnOff(startX, startY, stopX, stopY)
+	} else if strings.Contains(line, "toggle") {
+		line = strings.TrimLeft(line, "toggle ")
+		startX, startY, stopX, stopY := getCoords(line)
+		g.toggle(startX, startY, stopX, stopY)
+	}
+}
+
+func getCoords(line string) (startX int, startY int, stopX int, stopY int) {
+	split := strings.Split(line, " through ")
+	startCoords := split[0]
+	stopCoords := split[1]
+	startX, startY = toCoords(startCoords)
+	stopX, stopY = toCoords(stopCoords)
+	return startX, startY, stopX, stopY
+}
+
+func toCoords(input string) (int, int) {
+	split := strings.Split(input, ",")
+	x, err := strconv.Atoi(split[0])
+	if err != nil {
+		panic(err)
+	}
+	y, err := strconv.Atoi(split[1])
+	if err != nil {
+		panic(err)
+	}
+	return x, y
 }
 
 func (g *Grid) printLit() {
