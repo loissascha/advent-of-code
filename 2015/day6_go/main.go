@@ -10,7 +10,8 @@ import (
 const GRID_SIZE int = 1000
 
 type Light struct {
-	status bool
+	status     bool
+	brightness int
 }
 
 type Grid struct {
@@ -39,6 +40,7 @@ func main() {
 	}
 
 	grid.printLit()
+	grid.printBrightness()
 }
 
 func (g *Grid) processLine(line string) {
@@ -91,10 +93,24 @@ func (g *Grid) printLit() {
 	fmt.Println("lit:", lit)
 }
 
+func (g *Grid) printBrightness() {
+	lit := 0
+	for y := range GRID_SIZE {
+		for x := range GRID_SIZE {
+			lit += g.items[x][y].brightness
+		}
+	}
+	fmt.Println("brightness:", lit)
+}
+
 func (g *Grid) turnOff(startX, startY, stopX, stopY int) {
 	for y := startY; y <= stopY; y++ {
 		for x := startX; x <= stopX; x++ {
 			g.items[x][y].status = false
+			g.items[x][y].brightness -= 1
+			if g.items[x][y].brightness < 0 {
+				g.items[x][y].brightness = 0
+			}
 		}
 	}
 }
@@ -103,6 +119,7 @@ func (g *Grid) toggle(startX, startY, stopX, stopY int) {
 	for y := startY; y <= stopY; y++ {
 		for x := startX; x <= stopX; x++ {
 			g.items[x][y].status = !g.items[x][y].status
+			g.items[x][y].brightness += 2
 		}
 	}
 }
@@ -111,6 +128,7 @@ func (g *Grid) turnOn(startX, startY, stopX, stopY int) {
 	for y := startY; y <= stopY; y++ {
 		for x := startX; x <= stopX; x++ {
 			g.items[x][y].status = true
+			g.items[x][y].brightness += 1
 		}
 	}
 }
