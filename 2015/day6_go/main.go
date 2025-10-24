@@ -107,10 +107,11 @@ func (g *Grid) turnOff(startX, startY, stopX, stopY int) {
 	for y := startY; y <= stopY; y++ {
 		for x := startX; x <= stopX; x++ {
 			g.items[x][y].status = false
-			g.items[x][y].brightness -= 1
-			if g.items[x][y].brightness < 0 {
-				g.items[x][y].brightness = 0
-			}
+			g.items[x][y].brightness = max(g.items[x][y].brightness-1, 0)
+			// g.items[x][y].brightness -= 1
+			// if g.items[x][y].brightness < 0 {
+			// 	g.items[x][y].brightness = 0
+			// }
 		}
 	}
 }
