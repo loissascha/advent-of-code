@@ -5,10 +5,11 @@ const GRID_SIZE: usize = 1000;
 #[derive(Clone, Copy)]
 struct Light {
     status: bool,
+    brightness: u32,
 }
 
 struct Grid {
-    items: [[Light; GRID_SIZE]; GRID_SIZE],
+    items: Box<[[Light; GRID_SIZE]; GRID_SIZE]>,
 }
 
 struct Coords {
@@ -19,7 +20,7 @@ struct Coords {
 impl Grid {
     fn print_lit(&self) {
         let mut lit: u32 = 0;
-        for y in self.items {
+        for y in self.items.iter() {
             for x in y {
                 if x.status {
                     lit += 1;
@@ -29,11 +30,22 @@ impl Grid {
         println!("lit: {}", lit);
     }
 
+    fn print_brightness(&self) {
+        let mut bri: u32 = 0;
+        for y in self.items.iter() {
+            for x in y {
+                bri += x.brightness;
+            }
+        }
+        println!("bri: {}", bri);
+    }
+
     fn turn_on(&mut self, start_x: usize, start_y: usize, stop_x: usize, stop_y: usize) {
         // +1 because we want <= not <
         for y in start_y..stop_y + 1 {
             for x in start_x..stop_x + 1 {
                 self.items[x][y].status = true;
+                self.items[x][y].brightness += 1;
             }
         }
     }
@@ -42,6 +54,9 @@ impl Grid {
         for y in start_y..stop_y + 1 {
             for x in start_x..stop_x + 1 {
                 self.items[x][y].status = false;
+                if self.items[x][y].brightness > 0 {
+                    self.items[x][y].brightness -= 1;
+                }
             }
         }
     }
@@ -50,6 +65,7 @@ impl Grid {
         for y in start_y..stop_y + 1 {
             for x in start_x..stop_x + 1 {
                 self.items[x][y].status = !self.items[x][y].status;
+                self.items[x][y].brightness += 2;
             }
         }
     }
@@ -98,16 +114,22 @@ fn main() {
         .collect();
 
     let mut grid = Grid {
-        items: [[Light { status: false }; GRID_SIZE]; GRID_SIZE],
+        items: Box::new(
+            [[Light {
+                status: false,
+                brightness: 0,
+            }; GRID_SIZE]; GRID_SIZE],
+        ),
     };
 
     for line in lines {
         if line.trim() == "" {
             continue;
         }
-        println!("line: {}", line);
+        // println!("line: {}", line);
         grid.process_line(line);
     }
 
     grid.print_lit();
+    grid.print_brightness();
 }
