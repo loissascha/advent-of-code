@@ -5,6 +5,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/loissascha/go-logger/logger"
 )
 
 type Variable struct {
@@ -77,66 +79,93 @@ func retry() {
 	}
 }
 
+func getValueForPosition(input string) (uint16, bool) {
+	n, err := strconv.Atoi(input)
+	if err != nil {
+		v, found := variables[input]
+		if !found {
+			return 0, false
+		}
+		return v.Value, v.Done
+	}
+	return uint16(n), true
+}
+
 func getActionResult(input string) (uint16, bool) {
 	if strings.Contains(input, "AND") {
 		split := strings.Split(input, " AND ")
-		vara, found := variables[split[0]]
+
+		posa, found := getValueForPosition(split[0])
 		if !found {
+			logger.Error(nil, "AND: Can't find var: {VarName}", split[0])
 			return 0, false
 		}
-		varb, found := variables[split[1]]
+
+		posb, found := getValueForPosition(split[1])
 		if !found {
+			logger.Error(nil, "AND: Can't find var: {VarName}", split[1])
 			return 0, false
 		}
-		res := And(uint16(vara.Value), uint16(varb.Value))
+
+		res := And(posa, posb)
 		fmt.Println("and res:", res)
 		return res, true
 	} else if strings.Contains(input, "OR") {
 		split := strings.Split(input, " OR ")
-		vara, found := variables[split[0]]
+
+		posa, found := getValueForPosition(split[0])
 		if !found {
+			logger.Error(nil, "OR: Can't find var: {VarName}", split[0])
 			return 0, false
 		}
-		varb, found := variables[split[1]]
+
+		posb, found := getValueForPosition(split[1])
 		if !found {
+			logger.Error(nil, "OR: Can't find var: {VarName}", split[1])
 			return 0, false
 		}
-		res := Or(uint16(vara.Value), uint16(varb.Value))
+
+		res := Or(posa, posb)
 		fmt.Println("or res:", res)
 		return res, true
 	} else if strings.Contains(input, "LSHIFT") {
 		split := strings.Split(input, " LSHIFT ")
-		vara, found := variables[split[0]]
+		posa, found := getValueForPosition(split[0])
 		if !found {
+			logger.Error(nil, "LSHIFT: Can't find var: {VarName}", split[0])
 			return 0, false
 		}
-		shift, err := strconv.Atoi(split[1])
-		if err != nil {
-			panic(err)
+		posb, found := getValueForPosition(split[1])
+		if !found {
+			logger.Error(nil, "LSHIFT: Can't find var: {VarName}", split[1])
+			return 0, false
 		}
-		res := Lshift(uint16(vara.Value), uint16(shift))
+		res := Lshift(posa, posb)
 		fmt.Println("lshfit res:", res)
 		return res, true
 	} else if strings.Contains(input, "RSHIFT") {
 		split := strings.Split(input, " RSHIFT ")
-		vara, found := variables[split[0]]
+		posa, found := getValueForPosition(split[0])
 		if !found {
+			logger.Error(nil, "RSHIFT: Can't find var: {VarName}", split[0])
 			return 0, false
 		}
-		shift, err := strconv.Atoi(split[1])
-		if err != nil {
-			panic(err)
+		posb, found := getValueForPosition(split[1])
+		if !found {
+			logger.Error(nil, "RSHIFT: Can't find var: {VarName}", split[1])
+			return 0, false
 		}
-		res := Rshift(uint16(vara.Value), uint16(shift))
+		res := Rshift(posa, posb)
 		fmt.Println("rshfit res:", res)
 		return res, true
 	} else if strings.Contains(input, "NOT") {
 		varStr := strings.TrimLeft(input, "NOT ")
-		vara, found := variables[varStr]
+		posa, found := getValueForPosition(varStr)
 		if !found {
+			logger.Error(nil, "NOT: Can't find var: {VarName}", varStr)
 			return 0, false
 		}
-		res := Not(uint16(vara.Value))
+		res := Not(posa)
 		fmt.Println("not res:", res)
 		return res, true
 	} else {
@@ -145,6 +174,7 @@ func getActionResult(input string) (uint16, bool) {
 			// its a variable name
 			v, found := variables[input]
 			if !found {
+				logger.Error(nil, "Parse: Can't find var: {VarName}", input)
 				return 0, false
 			}
 			return v.Value, true
