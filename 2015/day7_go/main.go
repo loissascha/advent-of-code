@@ -55,14 +55,14 @@ func getActionResult(input string) int {
 		split := strings.Split(input, " AND ")
 		vara := variables[split[0]]
 		varb := variables[split[1]]
-		res := And(uint8(vara.Value), uint8(varb.Value))
+		res := And(uint16(vara.Value), uint16(varb.Value))
 		fmt.Println("and res:", res)
 		return int(res)
 	} else if strings.Contains(input, "OR") {
 		split := strings.Split(input, " OR ")
 		vara := variables[split[0]]
 		varb := variables[split[1]]
-		res := Or(uint8(vara.Value), uint8(varb.Value))
+		res := Or(uint16(vara.Value), uint16(varb.Value))
 		fmt.Println("or res:", res)
 		return int(res)
 	} else if strings.Contains(input, "LSHIFT") {
@@ -88,7 +88,7 @@ func getActionResult(input string) int {
 	} else if strings.Contains(input, "NOT") {
 		varStr := strings.TrimLeft(input, "NOT ")
 		vara := variables[varStr]
-		res := Not(uint8(vara.Value))
+		res := Not(uint16(vara.Value))
 		fmt.Println("not res:", res)
 		return int(res)
 	} else {
@@ -103,15 +103,15 @@ func getActionResult(input string) int {
 	return 0
 }
 
-func And(a, b uint8) uint8 {
+func And(a, b uint16) uint16 {
 	return a & b
 }
 
-func Or(a, b uint8) uint8 {
+func Or(a, b uint16) uint16 {
 	return a | b
 }
 
-func Not(a uint8) uint8 {
+func Not(a uint16) uint16 {
 	return ^a
 }
 
