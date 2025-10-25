@@ -8,10 +8,10 @@ import (
 )
 
 type Variable struct {
-	Name       string
-	Value      uint16
-	Operations []string
-	Done       bool
+	Name      string
+	Value     uint16
+	Operation string
+	Done      bool
 }
 
 var variables map[string]Variable = map[string]Variable{}
@@ -27,9 +27,22 @@ func main() {
 		processLine(line)
 	}
 
+	for hasUndone() {
+		retry()
+	}
+
 	fmt.Println(variables)
 	fmt.Println("var a value:", variables["a"].Value)
 	fmt.Println("var lx value:", variables["lx"].Value)
+}
+
+func hasUndone() bool {
+	for _, v := range variables {
+		if !v.Done {
+			return true
+		}
+	}
+	return false
 }
 
 // TODO: a gate provides no signal until all of it's inputs have a signal
@@ -45,13 +58,23 @@ func processLine(line string) {
 	actionResult, found := getActionResult(action)
 
 	variables[varname] = Variable{
-		Name:       varname,
-		Value:      actionResult,
-		Operations: []string{line},
-		Done:       found,
+		Name:      varname,
+		Value:     actionResult,
+		Operation: line,
+		Done:      found,
 	}
 
-	fmt.Println("Variable value: ", varname, actionResult)
+	if found {
+		fmt.Println("Variable value: ", varname, actionResult)
+	}
+}
+
+func retry() {
+	for _, v := range variables {
+		if !v.Done {
+			processLine(v.Operation)
+		}
+	}
 }
 
 func getActionResult(input string) (uint16, bool) {
