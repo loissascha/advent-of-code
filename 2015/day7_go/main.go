@@ -15,7 +15,7 @@ type Variable struct {
 var variables map[string]Variable = map[string]Variable{}
 
 func main() {
-	content, err := os.ReadFile("input.txt")
+	content, err := os.ReadFile("test_input.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -38,9 +38,9 @@ func processLine(line string) {
 
 	actionResult := getActionResult(action)
 
-	if actionResult < 0 {
-		actionResult = 65535 + actionResult + 1
-	}
+	// if actionResult < 0 {
+	// 	actionResult = 65535 + actionResult + 1
+	// }
 
 	variables[varname] = Variable{
 		Name:  varname,
@@ -72,7 +72,9 @@ func getActionResult(input string) int {
 		if err != nil {
 			panic(err)
 		}
-		return Lshift(vara.Value, int(shift))
+		res := Lshift(uint(vara.Value), uint(shift))
+		fmt.Println("lshfit res:", res)
+		return int(res)
 	} else if strings.Contains(input, "RSHIFT") {
 		split := strings.Split(input, " RSHIFT ")
 		vara := variables[split[0]]
@@ -80,7 +82,9 @@ func getActionResult(input string) int {
 		if err != nil {
 			panic(err)
 		}
-		return Rshift(vara.Value, int(shift))
+		res := Rshift(uint(vara.Value), uint(shift))
+		fmt.Println("rshfit res:", res)
+		return int(res)
 	} else if strings.Contains(input, "NOT") {
 		varStr := strings.TrimLeft(input, "NOT ")
 		vara := variables[varStr]
@@ -111,10 +115,10 @@ func Not(a uint8) uint8 {
 	return ^a
 }
 
-func Lshift(num, shift int) int {
+func Lshift(num, shift uint) uint {
 	return num << shift
 }
 
-func Rshift(num, shift int) int {
+func Rshift(num, shift uint) uint {
 	return num >> shift
 }
