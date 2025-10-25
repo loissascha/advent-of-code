@@ -9,7 +9,7 @@ import (
 
 type Variable struct {
 	Name  string
-	Value int
+	Value uint16
 }
 
 var variables map[string]Variable = map[string]Variable{}
@@ -50,21 +50,21 @@ func processLine(line string) {
 	fmt.Println("Variable value: ", varname, actionResult)
 }
 
-func getActionResult(input string) int {
+func getActionResult(input string) uint16 {
 	if strings.Contains(input, "AND") {
 		split := strings.Split(input, " AND ")
 		vara := variables[split[0]]
 		varb := variables[split[1]]
 		res := And(uint16(vara.Value), uint16(varb.Value))
 		fmt.Println("and res:", res)
-		return int(res)
+		return res
 	} else if strings.Contains(input, "OR") {
 		split := strings.Split(input, " OR ")
 		vara := variables[split[0]]
 		varb := variables[split[1]]
 		res := Or(uint16(vara.Value), uint16(varb.Value))
 		fmt.Println("or res:", res)
-		return int(res)
+		return res
 	} else if strings.Contains(input, "LSHIFT") {
 		split := strings.Split(input, " LSHIFT ")
 		vara := variables[split[0]]
@@ -74,7 +74,7 @@ func getActionResult(input string) int {
 		}
 		res := Lshift(uint16(vara.Value), uint16(shift))
 		fmt.Println("lshfit res:", res)
-		return int(res)
+		return res
 	} else if strings.Contains(input, "RSHIFT") {
 		split := strings.Split(input, " RSHIFT ")
 		vara := variables[split[0]]
@@ -84,20 +84,20 @@ func getActionResult(input string) int {
 		}
 		res := Rshift(uint16(vara.Value), uint16(shift))
 		fmt.Println("rshfit res:", res)
-		return int(res)
+		return res
 	} else if strings.Contains(input, "NOT") {
 		varStr := strings.TrimLeft(input, "NOT ")
 		vara := variables[varStr]
 		res := Not(uint16(vara.Value))
 		fmt.Println("not res:", res)
-		return int(res)
+		return res
 	} else {
 		v, err := strconv.Atoi(input)
 		if err != nil {
 			// its a variable name
 			return variables[input].Value
 		}
-		return int(v)
+		return uint16(v)
 	}
 
 	return 0
