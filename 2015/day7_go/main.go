@@ -9,13 +9,13 @@ import (
 
 type Variable struct {
 	Name  string
-	Value uint8
+	Value int
 }
 
 var variables map[string]Variable = map[string]Variable{}
 
 func main() {
-	content, err := os.ReadFile("test_input.txt")
+	content, err := os.ReadFile("input.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -24,6 +24,8 @@ func main() {
 		fmt.Println(line)
 		processLine(line)
 	}
+
+	fmt.Println("var a value:", variables["a"].Value)
 }
 
 func processLine(line string) {
@@ -36,6 +38,10 @@ func processLine(line string) {
 
 	actionResult := getActionResult(action)
 
+	if actionResult < 0 {
+		actionResult = 65535 + actionResult + 1
+	}
+
 	variables[varname] = Variable{
 		Name:  varname,
 		Value: actionResult,
@@ -44,7 +50,7 @@ func processLine(line string) {
 	fmt.Println("Variable value: ", varname, actionResult)
 }
 
-func getActionResult(input string) uint8 {
+func getActionResult(input string) int {
 	if strings.Contains(input, "AND") {
 		split := strings.Split(input, " AND ")
 		vara := variables[split[0]]
@@ -62,7 +68,7 @@ func getActionResult(input string) uint8 {
 		if err != nil {
 			panic(err)
 		}
-		return Lshift(vara.Value, uint8(shift))
+		return Lshift(vara.Value, int(shift))
 	} else if strings.Contains(input, "RSHIFT") {
 		split := strings.Split(input, " RSHIFT ")
 		vara := variables[split[0]]
@@ -70,7 +76,7 @@ func getActionResult(input string) uint8 {
 		if err != nil {
 			panic(err)
 		}
-		return Rshift(vara.Value, uint8(shift))
+		return Rshift(vara.Value, int(shift))
 	} else if strings.Contains(input, "NOT") {
 		varStr := strings.TrimLeft(input, "NOT ")
 		vara := variables[varStr]
@@ -78,30 +84,31 @@ func getActionResult(input string) uint8 {
 	} else {
 		v, err := strconv.Atoi(input)
 		if err != nil {
-			panic(err)
+			// its a variable name
+			return variables[input].Value
 		}
-		return uint8(v)
+		return int(v)
 	}
 
 	return 0
 }
 
-func And(a, b uint8) uint8 {
+func And(a, b int) int {
 	return a & b
 }
 
-func Or(a, b uint8) uint8 {
+func Or(a, b int) int {
 	return a | b
 }
 
-func Not(a uint8) uint8 {
+func Not(a int) int {
 	return ^a
 }
 
-func Lshift(num, shift uint8) uint8 {
+func Lshift(num, shift int) int {
 	return num << shift
 }
 
-func Rshift(num, shift uint8) uint8 {
+func Rshift(num, shift int) int {
 	return num >> shift
 }
