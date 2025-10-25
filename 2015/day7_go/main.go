@@ -15,7 +15,7 @@ type Variable struct {
 var variables map[string]Variable = map[string]Variable{}
 
 func main() {
-	content, err := os.ReadFile("test_input.txt")
+	content, err := os.ReadFile("input.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -72,7 +72,7 @@ func getActionResult(input string) int {
 		if err != nil {
 			panic(err)
 		}
-		res := Lshift(uint(vara.Value), uint(shift))
+		res := Lshift(uint16(vara.Value), uint16(shift))
 		fmt.Println("lshfit res:", res)
 		return int(res)
 	} else if strings.Contains(input, "RSHIFT") {
@@ -82,7 +82,7 @@ func getActionResult(input string) int {
 		if err != nil {
 			panic(err)
 		}
-		res := Rshift(uint(vara.Value), uint(shift))
+		res := Rshift(uint16(vara.Value), uint16(shift))
 		fmt.Println("rshfit res:", res)
 		return int(res)
 	} else if strings.Contains(input, "NOT") {
@@ -115,10 +115,10 @@ func Not(a uint16) uint16 {
 	return ^a
 }
 
-func Lshift(num, shift uint) uint {
+func Lshift(num, shift uint16) uint16 {
 	return num << shift
 }
 
-func Rshift(num, shift uint) uint {
+func Rshift(num, shift uint16) uint16 {
 	return num >> shift
 }
