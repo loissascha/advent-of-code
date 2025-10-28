@@ -10,7 +10,8 @@ var letters = []byte{'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
 var forbiddenLetters = []byte{'i', 'o', 'l'}
 
 func main() {
-	password := "cqjxjnds"
+	// password := "cqjxjnds"
+	password := "cqjxxyzz"
 	fmt.Println("input:", password)
 	for {
 		password = increasePassword(password)
