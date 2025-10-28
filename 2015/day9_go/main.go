@@ -55,13 +55,19 @@ func main() {
 		addRoute(city1, city2, distance)
 	}
 
-	// shortestDistance := -1
+	shortestDistance := -1
 	// var shortestPath *Path
 	for _, city := range cities {
 
 		node := buildNodesFromStartCity(city, nil, 0)
-		fmt.Println("node for startcity:", city.Name, node)
-		printNodeTree(node, 1, len(cities))
+		// fmt.Println("node for startcity:", city.Name, node)
+		// printNodeTree(node, 1, len(cities))
+
+		fastest := findFastestRoute(node, 1, len(cities))
+		// fmt.Println("fastest:", fastest)
+		if shortestDistance == -1 || fastest < shortestDistance {
+			shortestDistance = fastest
+		}
 
 		// fmt.Println("start point:", city.Name)
 		// paths := tryWithStartPoint(city, 0, nil)
@@ -81,7 +87,7 @@ func main() {
 		// 	}
 		// }
 	}
-	// fmt.Println("shortest distance:", shortestDistance)
+	fmt.Println("shortest distance:", shortestDistance)
 	// printPath(shortestPath)
 }
 
