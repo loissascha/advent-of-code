@@ -25,7 +25,7 @@ func main() {
 
 	fmt.Println(data)
 
-	sum := getSum(data)
+	sum := getMapSum(data)
 	fmt.Println("sum:", sum)
 }
 
@@ -51,7 +51,7 @@ func workValue(d any) int {
 	m, ok := d.(map[string]any)
 	if ok {
 		// fmt.Println("found map")
-		sum += getSum(m)
+		sum += getMapSum(m)
 		return sum
 	}
 	s, ok := d.([]any)
@@ -69,8 +69,26 @@ func workValue(d any) int {
 	return sum
 }
 
-func getSum(data map[string]any) int {
+func getMapSum(data map[string]any) int {
 	sum := 0
+
+	hasRed := false
+
+	for m, d := range data {
+		if m == "red" {
+			hasRed = true
+		}
+		s, ok := d.(string)
+		if ok {
+			if s == "red" {
+				hasRed = true
+			}
+		}
+	}
+
+	if hasRed {
+		return sum
+	}
 
 	for _, d := range data {
 		// fmt.Println("KEY:", m)
