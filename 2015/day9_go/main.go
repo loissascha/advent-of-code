@@ -55,29 +55,34 @@ func main() {
 		addRoute(city1, city2, distance)
 	}
 
-	shortestDistance := -1
-	var shortestPath *Path
+	// shortestDistance := -1
+	// var shortestPath *Path
 	for _, city := range cities {
+
+		node := buildNodesFromStartCity(city, nil, 0)
+		fmt.Println("node for startcity:", city.Name, node)
+		printNodeTree(node, 1, len(cities))
+
 		// fmt.Println("start point:", city.Name)
-		paths := tryWithStartPoint(city, 0, nil)
-		for _, path := range paths {
-			count := countPathParents(path)
-			if count < len(cities) {
-				continue
-			}
-			fmt.Println("count:", count)
-			if path.Distance < shortestDistance || shortestDistance == -1 {
-				shortestDistance = path.Distance
-				shortestPath = path
-			}
-			// fmt.Println("to:", path.Start.Name, "Distance:", path.Distance)
-			if path.Parent != nil {
-				// fmt.Println("parent: ", path.Parent.Start.Name)
-			}
-		}
+		// paths := tryWithStartPoint(city, 0, nil)
+		// for _, path := range paths {
+		// 	count := countPathParents(path)
+		// 	if count < len(cities) {
+		// 		continue
+		// 	}
+		// 	fmt.Println("count:", count)
+		// 	if path.Distance < shortestDistance || shortestDistance == -1 {
+		// 		shortestDistance = path.Distance
+		// 		shortestPath = path
+		// 	}
+		// 	// fmt.Println("to:", path.Start.Name, "Distance:", path.Distance)
+		// 	if path.Parent != nil {
+		// 		// fmt.Println("parent: ", path.Parent.Start.Name)
+		// 	}
+		// }
 	}
-	fmt.Println("shortest distance:", shortestDistance)
-	printPath(shortestPath)
+	// fmt.Println("shortest distance:", shortestDistance)
+	// printPath(shortestPath)
 }
 
 func printPath(path *Path) {
