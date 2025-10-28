@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"strconv"
+	"strings"
+)
 
 func main() {
 	input := "3113322113"
@@ -16,7 +20,7 @@ func main() {
 }
 
 func runCycle(input string) string {
-	output := ""
+	var output strings.Builder
 
 	var currentRune rune
 	currentRuneCount := 0
@@ -25,14 +29,16 @@ func runCycle(input string) string {
 			currentRuneCount++
 		} else {
 			if currentRuneCount > 0 {
-				output += fmt.Sprint(currentRuneCount) + string(currentRune)
+				output.WriteString(strconv.Itoa(currentRuneCount))
+				output.WriteRune(currentRune)
 			}
 			currentRuneCount = 1
 			currentRune = c
 		}
 	}
 	if currentRuneCount > 0 {
-		output += fmt.Sprint(currentRuneCount) + string(currentRune)
+		output.WriteString(strconv.Itoa(currentRuneCount))
+		output.WriteRune(currentRune)
 	}
-	return output
+	return output.String()
 }
