@@ -9,6 +9,20 @@ type Node struct {
 	Distance int
 }
 
+func findLongestRoute(node *Node, count int, targetCount int) int {
+	if count == targetCount {
+		return node.Distance
+	}
+	longest := -1
+	for _, n := range node.Nodes {
+		speed := findFastestRoute(n, count+1, targetCount)
+		if longest == -1 || longest < speed {
+			longest = speed
+		}
+	}
+	return longest
+}
+
 func findFastestRoute(node *Node, count int, targetCount int) int {
 	if count == targetCount {
 		return node.Distance

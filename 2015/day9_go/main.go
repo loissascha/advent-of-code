@@ -50,17 +50,23 @@ func main() {
 	}
 
 	shortestDistance := -1
+	longestDistance := -1
 	for _, city := range cities {
 
 		node := buildNodesFromStartCity(city, nil, 0)
 
 		fastest := findFastestRoute(node, 1, len(cities))
+		longest := findLongestRoute(node, 1, len(cities))
 		if shortestDistance == -1 || fastest < shortestDistance {
 			shortestDistance = fastest
+		}
+		if longestDistance == -1 || longestDistance < longest {
+			longestDistance = longest
 		}
 
 	}
 	fmt.Println("shortest distance:", shortestDistance)
+	fmt.Println("longest distance:", longestDistance)
 }
 
 func getRoutesForCity(city *City) []*Route {
