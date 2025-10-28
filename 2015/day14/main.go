@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
 
 type ReindeerState int
 
@@ -10,6 +15,7 @@ const (
 )
 
 type Reindeer struct {
+	Name     string
 	FlySpeed int
 	FlyTime  int
 	RestTime int
@@ -42,6 +48,7 @@ func (r *Reindeer) simulateSeconds(second int) int {
 func main() {
 
 	comet := &Reindeer{
+		Name:     "Comet",
 		FlySpeed: 14,
 		FlyTime:  10,
 		RestTime: 127,
@@ -49,6 +56,7 @@ func main() {
 	}
 
 	dancer := &Reindeer{
+		Name:     "Dancer",
 		FlySpeed: 16,
 		FlyTime:  11,
 		RestTime: 162,
@@ -60,4 +68,69 @@ func main() {
 	fmt.Println("comet distance:", comatDistance)
 	fmt.Println("dancer distance:", dancerDistance)
 
+	content, err := os.ReadFile("input.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	reindeers := []*Reindeer{}
+
+	lines := strings.SplitSeq(string(content), "\n")
+	for line := range lines {
+		if line == "" {
+			continue
+		}
+		r := lineToReindeer(line)
+		reindeers = append(reindeers, r)
+	}
+
+	fmt.Println("there are", len(reindeers), "reindeers")
+
+	simulationTime := 2503
+	longestDistance := 0
+	for _, r := range reindeers {
+		d := r.simulateSeconds(simulationTime)
+		if d > longestDistance {
+			longestDistance = d
+		}
+	}
+
+	fmt.Println("longest distance:", longestDistance)
+}
+
+func lineToReindeer(line string) *Reindeer {
+	split := strings.SplitN(line, "can fly", 2)
+	name := strings.TrimSpace(split[0])
+	line = split[1]
+
+	split = strings.SplitN(line, "km/s for", 2)
+	speedStr := strings.TrimSpace(split[0])
+	speed, err := strconv.Atoi(speedStr)
+	if err != nil {
+		panic(err)
+	}
+	line = split[1]
+
+	split = strings.SplitN(line, "seconds", 2)
+	timeStr := strings.TrimSpace(split[0])
+	time, err := strconv.Atoi(timeStr)
+	if err != nil {
+		panic(err)
+	}
+	line = split[1]
+
+	restTimeStr := strings.TrimLeft(line, ", but then must rest for ")
+	restTimeStr = strings.TrimRight(restTimeStr, " seconds.")
+	restTime, err := strconv.Atoi(restTimeStr)
+	if err != nil {
+		panic(err)
+	}
+
+	return &Reindeer{
+		Name:     name,
+		FlySpeed: speed,
+		FlyTime:  time,
+		RestTime: restTime,
+		State:    StateFly,
+	}
 }
