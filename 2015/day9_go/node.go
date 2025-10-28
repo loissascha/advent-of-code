@@ -15,7 +15,7 @@ func findLongestRoute(node *Node, count int, targetCount int) int {
 	}
 	longest := -1
 	for _, n := range node.Nodes {
-		speed := findFastestRoute(n, count+1, targetCount)
+		speed := findLongestRoute(n, count+1, targetCount)
 		if longest == -1 || longest < speed {
 			longest = speed
 		}

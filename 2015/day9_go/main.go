@@ -55,6 +55,8 @@ func main() {
 
 		node := buildNodesFromStartCity(city, nil, 0)
 
+		printNodeTree(node, 1, len(cities))
+
 		fastest := findFastestRoute(node, 1, len(cities))
 		longest := findLongestRoute(node, 1, len(cities))
 		if shortestDistance == -1 || fastest < shortestDistance {
