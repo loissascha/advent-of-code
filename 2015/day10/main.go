@@ -6,10 +6,10 @@ func main() {
 	input := "3113322113"
 	// input := "1"
 
-	for range 50 {
-		fmt.Println("Input:", len(input))
+	for n := range 50 {
+		fmt.Println("Input (", n, "):", len(input))
 		input = runCycle(input)
-		fmt.Println("Output:", len(input))
+		fmt.Println("Output (", n, "):", len(input))
 	}
 
 	fmt.Println("result len:", len(input))
