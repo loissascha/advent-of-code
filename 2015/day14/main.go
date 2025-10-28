@@ -48,7 +48,16 @@ func main() {
 		State:    StateFly,
 	}
 
+	dancer := &Reindeer{
+		FlySpeed: 16,
+		FlyTime:  11,
+		RestTime: 162,
+		State:    StateFly,
+	}
+
 	comatDistance := comet.simulateSeconds(1000)
+	dancerDistance := dancer.simulateSeconds(1000)
 	fmt.Println("comet distance:", comatDistance)
+	fmt.Println("dancer distance:", dancerDistance)
 
 }
