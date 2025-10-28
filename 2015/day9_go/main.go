@@ -27,7 +27,7 @@ var cities = []*City{}
 var routes = []*Route{}
 
 func main() {
-	content, err := os.ReadFile("test_input.txt")
+	content, err := os.ReadFile("input.txt")
 	if err != nil {
 		panic(err)
 	}
