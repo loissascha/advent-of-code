@@ -9,6 +9,7 @@ type Ingredient struct {
 	Flavor     int
 	Texture    int
 	Calories   int
+	Spoons     int
 }
 
 func (i *Ingredient) getScore(spoons int) (c, d, f, t, ca int) {
@@ -43,8 +44,25 @@ func main() {
 	list := []*Ingredient{
 		butterscotch, cinnamon,
 	}
-	score := getScore(list)
-	fmt.Println("score:", score)
+
+	highestScore := 0
+	for a := range 100 {
+		for b := range 100 {
+			if a+b == 100 {
+				butterscotch.Spoons = a
+				cinnamon.Spoons = b
+				score := getScore(list)
+				if score > highestScore {
+					highestScore = score
+				}
+			}
+		}
+	}
+
+	fmt.Println("highest score:", highestScore)
+
+	// score := getScore(list)
+	// fmt.Println("score:", score)
 
 }
 
@@ -56,7 +74,7 @@ func getScore(ings []*Ingredient) int {
 	overallCal := 0
 
 	for _, i := range ings {
-		ca, dur, fla, text, cal := i.getScore(50)
+		ca, dur, fla, text, cal := i.getScore(i.Spoons)
 		overallCap += ca
 		overallDura += dur
 		overallFla += fla
@@ -69,5 +87,6 @@ func getScore(ings []*Ingredient) int {
 	overallFla = max(overallFla, 0)
 	overallText = max(overallText, 0)
 	overallCal = max(overallCal, 0)
+	// overallCal = 1 // TODO: remove
 	return overallCap * overallDura * overallFla * overallText * overallCal
 }
