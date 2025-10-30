@@ -9,14 +9,29 @@ type Container struct {
 func main() {
 
 	containers := []*Container{
+		{size: 33},
+		{size: 14},
+		{size: 18},
 		{size: 20},
-		{size: 15},
-		{size: 10},
-		{size: 5},
-		{size: 5},
+		{size: 45},
+		{size: 35},
+		{size: 16},
+		{size: 35},
+		{size: 1},
+		{size: 13},
+		{size: 18},
+		{size: 13},
+		{size: 50},
+		{size: 44},
+		{size: 48},
+		{size: 6},
+		{size: 24},
+		{size: 41},
+		{size: 30},
+		{size: 42},
 	}
 
-	combinations := countCombinations(containers, 25)
+	combinations := countCombinations(containers, 150)
 	fmt.Println("there are", combinations, "combinations")
 
 }
