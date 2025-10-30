@@ -17,7 +17,15 @@ func (a *AuntSue) matchesOriginal(original *AuntSue) bool {
 	for k, v := range a.attributes {
 		ov, found := original.attributes[k]
 		if found {
-			if ov != v {
+			if k == "cats" || k == "trees" {
+				if v <= ov {
+					matches = false
+				}
+			} else if k == "pomeranians" || k == "goldfish" {
+				if v >= ov {
+					matches = false
+				}
+			} else if ov != v {
 				matches = false
 			}
 		}
