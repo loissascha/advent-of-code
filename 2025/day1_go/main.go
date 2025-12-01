@@ -7,14 +7,34 @@ import (
 	"strings"
 )
 
+var dialPosition = 50
+var zeros = 0
+
+func clickLeft() {
+	dialPosition--
+	if dialPosition == 0 {
+		zeros++
+	}
+	if dialPosition < 0 {
+		dialPosition = 99
+	}
+}
+
+func clickRight() {
+	dialPosition++
+	if dialPosition > 99 {
+		dialPosition = 0
+	}
+	if dialPosition == 0 {
+		zeros++
+	}
+}
+
 func main() {
 	content, err := os.ReadFile("input.txt")
 	if err != nil {
 		panic(err)
 	}
-
-	dialPosition := 50
-	zeros := 0
 
 	lines := strings.SplitSeq(string(content), "\n")
 	for line := range lines {
@@ -29,27 +49,19 @@ func main() {
 			if err != nil {
 				panic(err)
 			}
-			dialPosition -= turn
-			for dialPosition < 0 {
-				dialPosition = 99 - (dialPosition * -1) + 1
+			for range turn {
+				clickLeft()
 			}
-			fmt.Println("new dial position:", dialPosition)
 		} else if turnStr, ok := strings.CutPrefix(line, "R"); ok {
 			turn, err := strconv.Atoi(turnStr)
 			if err != nil {
 				panic(err)
 			}
-			dialPosition += turn
-			for dialPosition > 99 {
-				dialPosition = 0 + (dialPosition - 100)
+			for range turn {
+				clickRight()
 			}
-			fmt.Println("new dial position:", dialPosition)
 		} else {
 			panic("unknown prefix for line:" + line)
-		}
-
-		if dialPosition == 0 {
-			zeros++
 		}
 	}
 
