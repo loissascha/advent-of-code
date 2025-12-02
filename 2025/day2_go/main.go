@@ -45,16 +45,50 @@ func main() {
 
 	invalidSum := 0
 	for _, r := range ranges {
+	numFor:
 		for n := r.Start; n <= r.End; n++ {
 			nStr := strconv.Itoa(n)
-			if len(nStr)%2 == 0 {
-				splitLen := len(nStr) / 2
-				firstHalft := nStr[:splitLen]
-				secondHalf := nStr[splitLen:]
-				if firstHalft == secondHalf {
-					invalidSum += n
+
+			fmt.Println("checking n:", n)
+
+			for splits := 2; splits <= len(nStr); splits++ {
+				if len(nStr)%splits == 0 {
+					nnStr := nStr
+					splitLen := len(nnStr) / splits
+					fmt.Println("testing:", n, "for", splits, "splits. split len:", len(nnStr), splitLen)
+					baseStr := nnStr[:splitLen]
+					fmt.Println("baseStr:", baseStr)
+					nnStr = nnStr[splitLen:]
+					isEqual := true
+					for len(nnStr) > splitLen {
+						spStr := nnStr[:splitLen]
+						nnStr = nnStr[splitLen:]
+						if spStr != baseStr {
+							isEqual = false
+						}
+					}
+					if len(nnStr) > 0 {
+						if nnStr != baseStr {
+							isEqual = false
+						}
+					}
+
+					if isEqual {
+						fmt.Println(n, "is invalid!")
+						invalidSum += n
+						continue numFor
+					}
 				}
 			}
+
+			// if len(nStr)%2 == 0 {
+			// 	splitLen := len(nStr) / 2
+			// 	firstHalft := nStr[:splitLen]
+			// 	secondHalf := nStr[splitLen:]
+			// 	if firstHalft == secondHalf {
+			// 		invalidSum += n
+			// 	}
+			// }
 		}
 	}
 	fmt.Println("invalid sum:", invalidSum)
